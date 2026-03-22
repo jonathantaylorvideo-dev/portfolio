@@ -1,0 +1,50 @@
+[
+  {
+    "session_id": "596cd7ad",
+    "timestamp": "2026-03-22 14:04:28",
+    "item": "Failed Scan",
+    "value": "N/A"
+  },
+  {
+    "id": "b30307ff",
+    "time": "2026-03-22 14:57:14.396401",
+    "item": "The item you've identified is **Wolverine #1**, pu",
+    "method": "Text"
+  },
+  {
+    "id": "b30307ff",
+    "time": "2026-03-22 15:00:08.108430",
+    "item": "This item is a **CGC-graded copy of Detective Comi",
+    "method": "Upload"
+  },
+  {
+    "id": "b30307ff",
+    "time": "2026-03-22 15:03:09.404426",
+    "item": "The item shown in the image is:\n\n**Detective Comic",
+    "method": "Upload"
+  },
+  {
+    "id": "b30307ff",
+    "time": "2026-03-22 15:03:32.616181",
+    "item": "This item is a **CGC-graded copy of Detective Comi",
+    "method": "Upload"
+  },
+  {
+    "id": "b30307ff",
+    "time": "2026-03-22 15:03:51.091149",
+    "item": "Based on the image, the item is:\n\n**Item Identific",
+    "method": "Upload"
+  },
+  {
+    "id": "b30307ff",
+    "time": "2026-03-22 15:04:23.154900",
+    "item": "Based on the image, the item is:\n\n**Item Identific",
+    "method": "Upload"
+  },
+  {
+    "id": "d9ff75c3",
+    "time": "2026-03-22 15:04:59.003877",
+    "item": "Based on the image provided:\n\n**Item Identificatio",
+    "method": "Camera"
+  }
+]

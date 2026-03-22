@@ -1,0 +1,59 @@
+{
+  "profile": {
+    "name": "Jonathan Taylor",
+    "title": "Multimedia Professional & AI Systems Architect",
+    "about": "A creative technologist specializing in AI orchestration and digital infrastructure. From underwater videography in Thailand to robotic camera data pipelines in technical field operations, I build systems that bridge the gap between complex data and cinematic storytelling."
+  },
+  "blog": [
+    {
+      "title": "System Online: The AI Audit Engine",
+      "date": "2026-03-22",
+      "content": "Today marks the launch of the Feraluke AI Audit Agent. A custom-built tool designed to calculate ROI for business automation in under 60 seconds. This marks a new chapter in providing transparent, data-driven automation roadmaps for small businesses."
+    }
+  ],
+  "projects": [
+    {
+      "title": "Fiji Infrastructure Tracker",
+      "date": "2026-03",
+      "description": "A live-syncing data visualization tool developed to track infrastructure development and robotic camera mapping pipelines in real-time.",
+      "link": "https://github.com/jonathantaylorvideo-dev",
+      "tags": [
+        "Python",
+        "Streamlit",
+        "Data Arch"
+      ],
+      "steps": [
+        "Initialized Streamlit Framework",
+        "Integrated GitHub API for Real-time Sync",
+        "Deployed Global Infrastructure Map"
+      ]
+    },
+    {
+      "title": "AI Automation Audit Agent",
+      "date": "2026-03",
+      "description": "An interactive sales funnel that analyzes manual workflows, calculates yearly hourly loss, and provides a technical roadmap for AI integration.",
+      "link": "#",
+      "tags": [
+        "AI Agent",
+        "Sales Funnel",
+        "Automation"
+      ],
+      "steps": [
+        "Engineered Multi-Step Lead Capture",
+        "Built Formspree Email Courier",
+        "Integrated Conditional Zoom Handoff"
+      ]
+    },
+    {
+      "title": "Vision Vault",
+      "description": "A multimodal AI solution designed for high-volume hobby retailers. Using Gemini 1.5 Flash vision, this node instantly identifies, grades, and prices raw trading cards, comics, and miniatures via live camera feed. Beyond simple identification, the system leverages custom 'Upsell Logic' to suggest complementary inventory and set-completion items, turning a standard appraisal into a revenue-generating opportunity.",
+      "link": "http://localhost:8503",
+      "tags": [
+        "Computer Vision",
+        "Gemini 1.5",
+        "Retail ROI",
+        "Multimodal AI"
+      ]
+    }
+  ]
+}
