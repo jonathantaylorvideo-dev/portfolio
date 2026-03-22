@@ -5,75 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jonathan Taylor | AI Systems Architect</title>
     <style>
-        :root {
-            --fiji-teal: #00ffcc;
-            --dark-bg: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        /* 1. RESET & VIEWPORT LOCK */
+        :root { --fiji: #00ffcc; --bg: #0a0a0a; --glass: rgba(255,255,255,0.05); }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html {
-            height: 100vh; width: 100vw;
-            overflow: hidden; 
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
+        body { height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; }
 
-        /* 2. THE 3-TIER BENTO GRID (Based on your Sketch) */
+        /* BENTO GRID */
         .container {
-            display: grid;
+            display: grid; padding: 15px; gap: 15px; height: 100vh;
             grid-template-columns: 1.6fr 1fr;
             grid-template-rows: 1.2fr 1fr 0.8fr;
-            gap: 15px;
-            height: 100vh;
-            padding: 15px;
-            grid-template-areas: 
-                "about automation"
-                "vision library"
-                "featured featured";
+            grid-template-areas: "hero audit" "vision library" "feat feat";
         }
 
-        .bento-card {
-            background: var(--glass);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; position: relative; overflow: hidden; padding: 20px; transition: 0.3s; }
+        .card:hover { border-color: var(--fiji); transform: translateY(-3px); }
 
-        .bento-card:hover { 
-            border-color: var(--fiji-teal); 
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.15);
-        }
+        /* AREAS */
+        .hero { grid-area: hero; padding: 0; cursor: pointer; }
+        .audit { grid-area: audit; }
+        .vision { grid-area: vision; }
+        .library { grid-area: library; }
+        .feat { grid-area: feat; display: flex; justify-content: space-between; align-items: center; }
 
-        /* AREA MAPPING */
-        .blue-hero { grid-area: about; cursor: pointer; }
-        .green-audit { grid-area: automation; padding: 25px; }
-        .yellow-vault { grid-area: vision; padding: 25px; }
-        .purple-library { grid-area: library; padding: 25px; }
-        .purple-featured { grid-area: featured; padding: 25px; display: flex; align-items: center; justify-content: space-between; }
+        /* VIDEO HERO */
+        video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.5); }
+        .overlay { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
 
-        /* VIDEO HERO ELEMENTS */
-        .hero-video {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover; z-index: 0;
-            filter: brightness(0.5) contrast(1.1);
-            background: #000;
-        }
+        /* TEXT */
+        .lbl { color: var(--fiji); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+        h1 { font-size: 3rem; line-height: 0.9; margin: 5px 0; }
+        .feed { font-family: monospace; color: var(--fiji); font-size: 0.8rem; margin-top: 10px; opacity: 0.8; }
 
-        .hero-overlay {
-            position: absolute; inset: 0; z-index: 1;
-            background: linear-gradient(to top, rgba(10,10,10,0.95), transparent 70%);
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 40px;
-        }
+        /* MODAL */
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 100; text-align: center; padding: 20px; }
 
-        /* TYPOGRAPHY */
-        .label { color: var(--fiji-teal);
+        @media (max-width: 800px) { .container { grid-template-areas: "hero" "audit" "vision" "library" "feat"; grid-template-columns: 1fr; overflow-y: auto; height: auto; } body { overflow-y: auto; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card hero" onclick="toggle(true)">
+            <video autoplay muted loop playsinline>
+                <source src="assets/hero-loop.mp4" type="video/mp4">
+            </video>
+            <div class="overlay">
+                <span class="lbl">Principal Architect</span>
+                <h1>Jonathan Taylor</h1>
+                <p>AI Orchestration & Multimedia</p>
+            </div>
+        </div>
+
+        <div class="card audit">
+            <span class="lbl">Efficiency Engine</span>
+            <h3>Automation Audit</h3>
+            <div class="feed">[SYS]: audit_agent.py active<br>[ROI]: 240hrs recovered</div>
+        </div>
+
+        <div class="card vision">
+            <span class="lbl">Vision Vault</span>
+            <h3>Inventory Scan</h3>
+            <div class="feed">> vision_node.py scanning...<br>> Status: Online</div>
+        </div>
+
+        <div class="card library">
+            <span class="lbl">Archive</span>
+            <h3>Blog Library</h3>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">Accessing content.json...</p>
+        </div>
+
+        <div class="card feat">
+            <div>
+                <span class="lbl">Featured Broadcast</span>
+                <h3>System Online: The AI Audit Engine</h3>
+            </div>
+            <div style="width: 80px; height: 80px; border: 1px dashed var(--fiji); border-radius: 10px;"></div>
+        </div>
+    </div>
+
+    <div id="modal" onclick="toggle(false)">
+        <div>
+            <h2 style="color: var(--fiji); font-size: 2.5rem;">The Modern Druid</h2>
+            <p style="max-height: 400px; max-width: 600px; margin-top: 20px; line-height: 1.6;">
+                I bridge technical field operations with cinematic storytelling. From underwater videography to robotic camera data pipelines, I build automation that serves creative intent.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function toggle(show) { document.getElementById('modal').style.display = show ? 'flex' : 'none'; }
+    </script>
+</body>
+</html>
