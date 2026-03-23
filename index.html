@@ -132,3 +132,106 @@
         <div class="bento-card yellow-vault">
             <span class="label">Vision Vault</span>
             <h2>Inventory Scan</h2>
+            <div style="font-family: monospace; color: var(--fiji-teal); font-size: 0.8rem; margin-top: 15px;">
+                > Loading vision_node.py...<br>
+                > Status: Online
+            </div>
+        </div>
+
+        <div class="bento-card purple-library">
+            <span class="label">The Archive</span>
+            <h2>Blog Library</h2>
+            <p>12 Technical Broadcasts Online.</p>
+        </div>
+
+        <div class="bento-card purple-featured">
+            <div style="max-width: 70%;">
+                <span class="label">Featured Broadcast</span>
+                <h2>AI Orchestration for Scale</h2>
+            </div>
+            <div style="width: 100px; height: 100px; border: 1px dashed var(--fiji-teal); border-radius: 15px;"></div>
+        </div>
+    </div>
+
+    <div id="about-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:1000; align-items:center; justify-content:center;" onclick="toggleModal(false)">
+        <div style="text-align:center; padding:40px;">
+            <h2 style="color:var(--fiji-teal); font-size:3rem;">The Modern Druid</h2>
+            <p style="max-width:600px; margin-top:20px;">Bridging technical field ops with generative storytelling.</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. ROI Counter Logic
+        let hrs = 248.50;
+        setInterval(() => {
+            hrs += Math.random() * 0.01;
+            const el = document.getElementById('roi-counter');
+            if(el) el.innerText = hrs.toFixed(2) + " HRS";
+        }, 4000);
+
+        // 2. Audit Funnel State Management
+        const questions = [
+            "Primary bottleneck (e.g. Data Entry, Content)?",
+            "Hours lost per week to this task?",
+            "Current Tech Stack (Excel, Shopify, etc)?",
+            "Are you currently using AI (Yes/No)?",
+            "Target 'Hours Saved' per month?",
+            "Email for the Generative ROI Report?"
+        ];
+        let step = 0;
+        let data = [];
+
+        function startAudit() {
+            step = 0;
+            data = [];
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const flow = document.getElementById('audit-flow');
+            flow.innerHTML = `
+                <span class="label">Step ${step + 1} of 6</span>
+                <h2 style="font-size: 1.1rem; min-height: 50px;">${questions[step]}</h2>
+                <input type="text" id="q-input" class="audit-input" placeholder="Type here..." autocomplete="off">
+                <button class="btn-fiji" onclick="submitAnswer()">NEXT -></button>
+            `;
+            document.getElementById('q-input').focus();
+            
+            // Allow 'Enter' key to submit
+            document.getElementById('q-input').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') submitAnswer();
+            });
+        }
+
+        function submitAnswer() {
+            const val = document.getElementById('q-input').value;
+            if(!val) return;
+            data.push(val);
+            step++;
+            if(step < questions.length) {
+                showQuestion();
+            } else {
+                finishAudit();
+            }
+        }
+
+        function finishAudit() {
+            const flow = document.getElementById('audit-flow');
+            flow.innerHTML = `
+                <h2 style="color: var(--fiji-teal);">Processing...</h2>
+                <p style="font-family: monospace; font-size: 0.8rem; margin-top: 15px;">
+                    [SYS]: Analyzing dataset...<br>
+                    [SYS]: Formatting ROI model...<br>
+                    [SYS]: Pushing to orchestration node...
+                </p>
+                <div style="margin-top: 20px; font-size: 0.9rem;">Check <b>${data[5]}</b> for your custom workflow.</div>
+                <button class="btn-fiji" style="background:none; border: 1px solid var(--fiji-teal); color: var(--fiji-teal); margin-top: 20px;" onclick="location.reload()">RESET SYSTEM</button>
+            `;
+            console.log("Lead Captured:", data);
+            // INTEGRATION NOTE: Use Formspree or a Lambda function here to email 'data'
+        }
+
+        function toggleModal(s) { document.getElementById('about-modal').style.display = s ? 'flex' : 'none'; }
+    </script>
+</body>
+</html>
