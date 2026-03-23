@@ -3,31 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Strategy Audit | Local Architect Node</title>
+    <title>AI Strategy Audit | Architect Node</title>
     <style>
-        :root { --primary: #00ffcc; --bg: #0a0a0a; --text: #e0e0e0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; display: flex; justify-content: center; padding: 20px; }
-        .container { max-width: 800px; width: 100%; background: #111; padding: 30px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: var(--primary); margin-bottom: 10px; }
-        .status-bar { font-size: 0.85rem; margin-bottom: 20px; padding: 10px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #444; }
-        .status-online { border-left-color: var(--primary); color: var(--primary); }
+        :root { --primary: #00ffcc; --bg: #0a0a0a; --text: #e0e0e0; --card: #111; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        
+        .container { max-width: 600px; width: 100%; background: var(--card); padding: 30px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 50px; }
+        h1 { color: var(--primary); margin-top: 0; }
+        
+        /* 🟢 Status Bar */
+        .status-bar { font-size: 0.8rem; margin-bottom: 20px; padding: 10px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #444; transition: 0.3s; }
+        .status-online { border-left-color: var(--primary); color: var(--primary); background: rgba(0, 255, 204, 0.05); }
+
+        /* 📝 Form Styling */
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
-        button { background: var(--primary); color: black; border: none; padding: 12px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 10px; }
-        button:hover { background: #00d4aa; transform: translateY(-2px); }
-        #audit-result { margin-top: 30px; padding: 20px; background: #1a1a1a; border-radius: 8px; border: 1px dashed #444; min-height: 100px; white-space: pre-wrap; }
-        .loading { color: var(--primary); font-style: italic; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        input:focus { border-color: var(--primary); outline: none; }
+        
+        button { background: var(--primary); color: black; border: none; padding: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 10px; font-size: 1rem; }
+        button:hover:not(:disabled) { background: #00d4aa; transform: translateY(-2px); }
+        button:disabled { background: #333; color: #777; cursor: not-allowed; }
+
+        /* 🎭 The Modal (The Popup) */
+        #audit-modal { 
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+            width: 100%; height: 100%; background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px); justify-content: center; align-items: center; 
+        }
+        .modal-content { 
+            background: #1a1a1a; width: 90%; max-width: 700px; max-height: 80vh; 
+            overflow-y: auto; padding: 40px; border-radius: 15px; border: 1px solid var(--primary);
+            position: relative; box-shadow: 0 0 50px rgba(0, 255, 204, 0.2);
+        }
+        .close-btn { 
+            position: absolute; top: 15px; right: 20px; font-size: 24px; 
+            color: #777; cursor: pointer; transition: 0.3s; 
+        }
+        .close-btn:hover { color: var(--primary); }
+        
+        #audit-result-text { line-height: 1.8; color: #ccc; }
+        #audit-result-text h3 { color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        .loading-spinner { color: var(--primary); font-style: italic; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>AI Systems Audit</h1>
-    <p>Generate a professional AI automation roadmap for your business.</p>
+    <h1>AI Strategy Audit</h1>
+    <p>Architecture for solo-operations and small businesses.</p>
 
     <div id="status-box" class="status-bar">
-        Status: <span id="status-text">Checking Local Node...</span>
+        Status: <span id="status-text">Waking up the Cloud Engine...</span>
     </div>
 
     <form id="auditForm">
@@ -41,18 +69,21 @@
                 <option value="Retail">Local Retail (LGS/Comics)</option>
                 <option value="Creative">Creative Services (Film/Music)</option>
                 <option value="Technical">Technical Operations</option>
-                <option value="Other">Other</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Current Biggest Bottleneck</label>
-            <textarea id="bottleneck" rows="3" placeholder="e.g. Manual inventory entry taking 10 hours a week..."></textarea>
+            <label>Primary Bottleneck</label>
+            <textarea id="bottleneck" rows="3" placeholder="e.g. Inventory management takes 10 hours a week..." required></textarea>
         </div>
-        <button type="submit" id="submitBtn">Initiate Free Audit</button>
+        <button type="submit" id="submitBtn" disabled>Initiate Free Audit</button>
     </form>
+</div>
 
-    <div id="audit-result">
-        Your AI-generated ROI report will appear here...
+<div id="audit-modal">
+    <div class="modal-content" id="modal-container">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <div id="audit-result-text">
+            </div>
     </div>
 </div>
 
@@ -60,25 +91,30 @@
     const statusText = document.getElementById('status-text');
     const statusBox = document.getElementById('status-box');
     const auditForm = document.getElementById('auditForm');
-    const resultDiv = document.getElementById('audit-result');
     const submitBtn = document.getElementById('submitBtn');
+    const auditModal = document.getElementById('audit-modal');
+    const resultText = document.getElementById('audit-result-text');
+    const closeModal = document.getElementById('closeModal');
 
-    // 1. Check if the Docker Container is actually running
+    const API_BASE = "https://ai-strategy-engine.onrender.com";
+
+    // 1. Check Connection (Only pings the status route)
     async function checkConnection() {
         try {
-          const response = await fetch('https://ai-strategy-engine.onrender.com/api/generate-audit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-});
+            const response = await fetch(`${API_BASE}/api/status`);
+            if (response.ok) {
+                statusText.innerText = "🟢 AI Architect Node Active";
+                statusBox.classList.add('status-online');
+                submitBtn.disabled = false;
+            }
         } catch (err) {
-            statusText.innerText = "🔴 Local Node Offline (Run 'node server.js' in Docker)";
+            statusText.innerText = "🔴 System Initializing... (Wait 30s)";
             statusBox.classList.remove('status-online');
             submitBtn.disabled = true;
         }
     }
 
-    // 2. Handle the Audit Generation
+    // 2. Form Submission
     auditForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -88,34 +124,47 @@
             bottleneck: document.getElementById('bottleneck').value
         };
 
-        resultDiv.innerHTML = '<p class="loading">Architect is analyzing your workflow... please wait.</p>';
-        submitBtn.innerText = "Processing...";
+        // UI Feedback
+        submitBtn.innerText = "Analyzing Workflow...";
         submitBtn.disabled = true;
 
         try {
-            const response = await fetch('http://localhost:3000/api/generate-audit', {
+            const response = await fetch(`${API_BASE}/api/generate-audit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
 
-            if (!response.ok) throw new Error('Server Error');
+            if (!response.ok) throw new Error('AI Engine Error');
 
             const data = await response.json();
-            resultDiv.innerHTML = `<h3>Audit Results for ${formData.businessName}</h3>${data.audit}`;
+            
+            // Show the Modal & Inject Text
+            resultText.innerHTML = `<h2>Audit for ${formData.businessName}</h2>` + data.audit;
+            auditModal.style.display = 'flex';
             
         } catch (error) {
-            resultDiv.innerHTML = `<p style="color: #ff6666;"><strong>Error:</strong> Could not connect to the local AI engine. Make sure Docker is running on Port 3000.</p>`;
+            alert("The AI Engine is busy or erroring. Please check the logs.");
         } finally {
             submitBtn.innerText = "Initiate Free Audit";
             submitBtn.disabled = false;
         }
     });
 
-    // Initial connection check
+    // 3. Close Modal Logic
+    closeModal.onclick = () => auditModal.style.display = "none";
+    
+    // Close if clicking outside the box
+    window.onclick = (event) => {
+        if (event.target == auditModal) {
+            auditModal.style.display = "none";
+        }
+    }
+
+    // Initial check on load
     checkConnection();
-    // Re-check every 10 seconds to ensure the bridge stays alive
-    setInterval(checkConnection, 10000);
+    // Re-check every 20 seconds
+    setInterval(checkConnection, 20000);
 </script>
 
 </body>
