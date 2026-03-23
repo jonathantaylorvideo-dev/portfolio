@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jonathan D. Taylor | AI Architect</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    
     <style>
         :root { --primary: #00ffcc; --bg: #0a0a0a; --card: rgba(20, 20, 20, 0.85); --text: #e0e0e0; }
         
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow-x: hidden; color: var(--text); }
 
         /* --- LAYER 1: 🎥 VIDEO BACKGROUND --- */
         .video-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden;
+            z-index: -2; overflow: hidden; background: #000;
         }
         .video-background video {
             min-width: 100%; min-height: 100%;
@@ -22,41 +24,36 @@
         /* --- LAYER 2: 📺 THE SCANLINE LAYER (The Glass) --- */
         .video-background::after {
             content: "";
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%;
-            /* This creates the digital stripes and subtle chromatic shift */
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* High-visibility scanlines for the 'Snap' effect */
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
             background-size: 100% 4px, 3px 100%;
-            pointer-events: none; 
-            z-index: 1; 
+            pointer-events: none; z-index: -1; 
         }
 
-        /* --- LAYER 3: 🍱 THE UI BENTO GRID (The Interactive Layer) --- */
-        .wrapper { 
-            position: relative; 
-            z-index: 10; /* This pushes the UI on top of the scanlines */
-            max-width: 1200px; margin: 0 auto; padding: 60px 20px; box-sizing: border-box; 
-        }
+        /* --- LAYER 3: 🍱 THE UI BENTO GRID --- */
+        .wrapper { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 60px 20px; box-sizing: border-box; }
         
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: auto;
-            gap: 20px;
-        }
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
         .card { 
             background: var(--card); backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px; padding: 30px;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d; /* Required for internal 3D floating text */
+            transition: border-color 0.3s ease;
         }
-        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .card:hover { border-color: var(--primary); }
 
         .hero-card { grid-column: span 3; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
-        .hero-card h1 { font-size: 3.5rem; margin: 0; color: var(--primary); text-transform: uppercase; letter-spacing: -2px; }
-        .hero-card p { font-size: 1.2rem; opacity: 0.8; margin-top: 10px; }
+        .hero-card h1 { 
+            font-size: 3.5rem; margin: 0; color: var(--primary); 
+            text-transform: uppercase; letter-spacing: -2px;
+            transform: translateZ(50px); /* Makes name "float" 50px off the card */
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .hero-card p { transform: translateZ(30px); opacity: 0.8; }
 
         .audit-card { grid-column: span 2; border: 1px solid var(--primary); background: rgba(0, 255, 204, 0.05); }
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; background: #444; }
@@ -68,26 +65,20 @@
             width: 100%; height: 100%; background: rgba(0,0,0,0.92);
             backdrop-filter: blur(15px); justify-content: center; align-items: center;
         }
-        .modal-content {
-            background: #111; width: 85%; max-width: 800px; padding: 50px;
-            border-radius: 25px; border: 1px solid #333; position: relative;
-            max-height: 85vh; overflow-y: auto;
-        }
+        .modal-content { background: #111; width: 85%; max-width: 800px; padding: 50px; border-radius: 25px; border: 1px solid #333; position: relative; }
         .close-btn { position: absolute; top: 20px; right: 30px; font-size: 30px; color: #555; cursor: pointer; }
 
         input, select, textarea { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 8px; margin-top: 10px; }
         button { width: 100%; padding: 15px; margin-top: 20px; background: var(--primary); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
 
-        @media (max-width: 900px) {
-            .bento-grid { grid-template-columns: 1fr; }
-            .hero-card, .audit-card { grid-column: span 1; }
-        }
+        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero-card, .audit-card { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
     <div class="video-background">
-        <video autoplay muted loop playsinline>
+        <video autoplay muted loop playsinline poster="assets/hero-loop.gif">
+            <source src="assets/hero-loop.webm" type="video/webm">
             <source src="assets/your-background-video.mp4" type="video/mp4">
         </video>
     </div>
@@ -98,18 +89,18 @@
             <div class="card hero-card" onclick="openModal('about-modal')">
                 <h1>Jonathan D. Taylor</h1>
                 <p>AI Systems Architect & Agentic Workflow Designer</p>
-                <small style="color: var(--primary)">[ Click to explore the Architect's Profile ]</small>
+                <small style="color: var(--primary)">[ CLICK TO EXPLORE PROFILE ]</small>
             </div>
 
-            <div class="card">
+            <div class="card" data-tilt>
                 <h3>Node Status</h3>
                 <div id="status-container">
                     <span id="status-dot" class="status-dot"></span>
-                    <span id="status-text" style="font-size: 0.9rem;">Waking Cloud...</span>
+                    <span id="status-text" style="font-size: 0.9rem;">Connecting...</span>
                 </div>
             </div>
 
-            <div class="card audit-card">
+            <div class="card audit-card" data-tilt>
                 <h3>⚡ Strategy Audit</h3>
                 <form id="auditForm">
                     <input type="text" id="bizName" placeholder="Business Name" required>
@@ -122,9 +113,9 @@
                 </form>
             </div>
 
-            <div class="card">
+            <div class="card" data-tilt>
                 <h3>Creative Engine</h3>
-                <p>Uke Gothic, Prog-Folk Noir, and High-End Cinematography.</p>
+                <p>Uke Gothic & Prog-Folk Noir.</p>
             </div>
 
         </div>
@@ -134,8 +125,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('about-modal')">&times;</span>
             <h2 style="color: var(--primary)">About Jonathan</h2>
-            <p>I bridge the gap between complex backend systems and creative storytelling.</p>
-            <p>From the St. Louis hobby retail scene to specialized field operations, my goal is solo-op efficiency at enterprise scale.</p>
+            <p>I bridge the gap between complex systems and creative storytelling.</p>
         </div>
     </div>
 
@@ -149,7 +139,25 @@
 <script>
     const API_BASE = "https://ai-strategy-engine.onrender.com";
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    // 📱 Haptic Engine
+    const haptic = {
+        click: () => { if (navigator.vibrate) navigator.vibrate(10); },
+        success: () => { if (navigator.vibrate) navigator.vibrate([20, 50, 20]); },
+        error: () => { if (navigator.vibrate) navigator.vibrate(200); }
+    };
+
+    // 🕹️ Initialize Marvel Snap Physics
+    VanillaTilt.init(document.querySelectorAll(".card"), {
+        max: 15,
+        speed: 400,
+        glare: true,
+        "max-glare": 0.3,
+        perspective: 1000,
+        gyroscope: true,
+        scale: 1.02
+    });
+
+    function openModal(id) { haptic.click(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; }
 
@@ -164,13 +172,12 @@
                 text.innerText = "System Online";
                 btn.disabled = false;
             }
-        } catch (err) {
-            text.innerText = "Initializing Cloud...";
-        }
+        } catch (err) { text.innerText = "Re-establishing Node..."; }
     }
 
     document.getElementById('auditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        haptic.click();
         const btn = document.getElementById('submitBtn');
         btn.innerText = "Analyzing...";
         
@@ -185,13 +192,11 @@
                 })
             });
             const data = await res.json();
+            haptic.success();
             document.getElementById('audit-text-content').innerHTML = `<h2>Audit Results</h2>` + data.audit;
             openModal('audit-result-modal');
-        } catch (error) {
-            alert("Connection error.");
-        } finally {
-            btn.innerText = "Initiate Audit";
-        }
+        } catch (error) { haptic.error(); alert("Connection error."); }
+        finally { btn.innerText = "Initiate Audit"; }
     });
 
     checkConnection();
