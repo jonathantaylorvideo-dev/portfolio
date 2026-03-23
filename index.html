@@ -12,17 +12,16 @@
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* RESET & VIEWPORT LOCK */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body, html {
             height: 100vh; width: 100vw;
             overflow: hidden; 
             background-color: var(--dark-bg);
             color: #ffffff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* BENTO GRID LAYOUT */
+        /* BENTO GRID */
         .container {
             display: grid;
             grid-template-columns: 1.6fr 1fr;
@@ -43,73 +42,64 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s ease;
         }
 
-        .bento-card:hover { 
-            border-color: var(--fiji-teal); 
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.15);
-        }
-
-        /* AREA MAPPING */
         .blue-hero { grid-area: hero; cursor: pointer; }
-        .green-audit { grid-area: audit; padding: 25px; }
+        .green-audit { grid-area: audit; padding: 30px; display: flex; flex-direction: column; }
         .yellow-vault { grid-area: vision; padding: 25px; }
         .purple-library { grid-area: library; padding: 25px; }
         .purple-featured { grid-area: featured; padding: 25px; display: flex; align-items: center; justify-content: space-between; }
 
-        /* VIDEO HERO STYLING */
+        /* VIDEO HERO */
         .hero-video {
             position: absolute; inset: 0;
             width: 100%; height: 100%;
             object-fit: cover; z-index: 0;
             filter: brightness(0.4) contrast(1.1);
-            background: #000;
         }
 
         .hero-overlay {
             position: absolute; inset: 0; z-index: 1;
-            background: linear-gradient(to top, rgba(10,10,10,0.95), transparent 70%);
+            background: linear-gradient(to top, rgba(10,10,10,0.9), transparent);
             display: flex; flex-direction: column; justify-content: flex-end;
             padding: 40px;
         }
 
-        /* TYPOGRAPHY */
-        .label { color: var(--fiji-teal); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; font-weight: 800; }
-        h1 { font-size: clamp(2rem, 5vw, 4rem); text-transform: uppercase; letter-spacing: -2px; margin: 0; line-height: 0.85; }
-        h2 { font-size: 1.2rem; text-transform: uppercase; margin: 0; letter-spacing: 1px; font-weight: 600; }
-        p { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.5; margin-top: 10px; }
-
-        /* LIVE FEEDS */
-        .status-feed { 
-            font-family: 'Courier New', monospace; 
-            font-size: 0.85rem; 
-            color: var(--fiji-teal); 
-            margin-top: 20px; 
-            line-height: 1.6; 
+        /* AUDIT FUNNEL STYLES */
+        .label { color: var(--fiji-teal); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; margin-bottom: 8px; display: block; }
+        .roi-val { font-family: monospace; font-size: 2.2rem; color: var(--fiji-teal); margin: 10px 0; text-shadow: 0 0 10px rgba(0,255,204,0.3); }
+        
+        .audit-input {
+            width: 100%;
             background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            margin-top: 15px;
+            font-family: monospace;
+            outline: none;
         }
+        .audit-input:focus { border-color: var(--fiji-teal); }
 
-        /* MODAL */
-        #about-modal {
-            position: fixed; inset: 0; background: rgba(5,5,5,0.98);
-            z-index: 1000; display: none; flex-direction: column;
-            justify-content: center; align-items: center; padding: 60px;
-            backdrop-filter: blur(30px);
+        .btn-fiji {
+            background: var(--fiji-teal);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: 0.3s;
         }
+        .btn-fiji:hover { transform: scale(1.02); filter: brightness(1.1); }
 
         /* RESPONSIVE */
         @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto;
-                grid-template-areas: "hero" "audit" "vision" "library" "featured";
-                overflow-y: auto; height: auto;
-            }
+            .container { grid-template-areas: "hero" "audit" "vision" "library" "featured"; grid-template-columns: 1fr; overflow-y: auto; height: auto; }
             body { overflow-y: auto; }
         }
     </style>
@@ -121,75 +111,24 @@
             <video id="heroVideo" autoplay muted loop playsinline class="hero-video">
                 <source src="assets/hero-loop.webm" type="video/webm">
                 <source src="assets/hero-loop.mp4" type="video/mp4">
-                <img src="assets/hero-loop.gif" alt="Hero Fallback">
             </video>
             <div class="hero-overlay">
                 <span class="label">Principal Architect</span>
                 <h1>Jonathan Taylor</h1>
-                <p style="color: var(--fiji-teal); opacity: 1;">Multimedia Professional & AI Systems Architect</p>
+                <p style="color: var(--fiji-teal);">Multimedia & AI Orchestration</p>
             </div>
         </div>
 
-        <div class="bento-card green-audit">
+        <div class="bento-card green-audit" id="audit-card">
             <span class="label">Efficiency Engine</span>
-            <h2>Automation Audit</h2>
-            <div class="status-feed">
-                [SYSTEM]: Loading audit_agent.py...<br>
-                [ROI]: Tracking 240h/yr recovery<br>
-                [STATUS]: Optimization Node Active
+            <div id="audit-flow">
+                <h2>System ROI Tracker</h2>
+                <div class="roi-val" id="roi-counter">248.50 HRS</div>
+                <p style="font-size: 0.8rem; opacity: 0.6;">Total operational hours recovered for clients this year.</p>
+                <button class="btn-fiji" onclick="startAudit()">INITIATE FREE AUDIT</button>
             </div>
         </div>
 
         <div class="bento-card yellow-vault">
             <span class="label">Vision Vault</span>
             <h2>Inventory Scan</h2>
-            <div id="vision-feed" class="status-feed">
-                > Connecting to vision_node.py...<br>
-                > Analyzing collectibles...<br>
-                > Status: Awaiting Scan Data
-            </div>
-        </div>
-
-        <div class="bento-card purple-library">
-            <span class="label">The Archive</span>
-            <h2>Blog Library</h2>
-            <p>Accessing the "Modern Druid" broadcast deck. 12 broadcasts remaining.</p>
-        </div>
-
-        <div class="bento-card purple-featured">
-            <div style="max-width: 75%;">
-                <span class="label">Featured Broadcast</span>
-                <h2>System Online: The AI Audit Engine</h2>
-                <p>Tactical AI orchestration for small business scalability.</p>
-            </div>
-            <div style="width: 140px; height: 140px; border: 1px dashed var(--fiji-teal); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--fiji-teal); background: rgba(0,255,204,0.03);">
-                THUMBNAIL
-            </div>
-        </div>
-    </div>
-
-    <div id="about-modal" onclick="toggleModal(false)">
-        <h2 style="color: var(--fiji-teal); font-size: 3rem; margin-bottom: 20px;">The Modern Druid</h2>
-        <p style="max-width: 750px; text-align: center; font-size: 1.3rem; line-height: 1.8; color: #eee;">
-            I bridge the gap between technical field operations and digital storytelling. 
-            From underwater videography to robotic camera data pipelines, 
-            I specialize in "vibe coding" and AI orchestration that serves creative intent.
-        </p>
-        <p style="margin-top: 40px; font-size: 0.8rem; letter-spacing: 3px; color: var(--fiji-teal);">CLICK TO DISMISS</p>
-    </div>
-
-    <script>
-        function toggleModal(show) {
-            document.getElementById('about-modal').style.display = show ? 'flex' : 'none';
-        }
-
-        // Force Autoplay Check
-        window.addEventListener('load', function() {
-            const video = document.getElementById('heroVideo');
-            video.play().catch(error => {
-                console.log("Autoplay blocked. User interaction required.");
-            });
-        });
-    </script>
-</body>
-</html>
