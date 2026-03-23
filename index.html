@@ -5,95 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jonathan Taylor | AI Systems Architect</title>
     <style>
-        :root { --fiji: #00ffcc; --bg: #0a0a0a; --glass: rgba(255,255,255,0.05); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; }
-
-        /* BENTO GRID */
-        .container {
-            display: grid; padding: 15px; gap: 15px; height: 100vh;
-            grid-template-columns: 1.6fr 1fr;
-            grid-template-rows: 1.2fr 1fr 0.8fr;
-            grid-template-areas: "hero audit" "vision library" "feat feat";
+        :root {
+            --fiji-teal: #00ffcc;
+            --dark-bg: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        .card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; position: relative; overflow: hidden; padding: 20px; transition: 0.3s; }
-        .card:hover { border-color: var(--fiji); transform: translateY(-3px); }
+        /* RESET & VIEWPORT LOCK */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            height: 100vh; width: 100vw;
+            overflow: hidden; 
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
 
-        /* AREAS */
-        .hero { grid-area: hero; padding: 0; cursor: pointer; }
-        .audit { grid-area: audit; }
-        .vision { grid-area: vision; }
-        .library { grid-area: library; }
-        .feat { grid-area: feat; display: flex; justify-content: space-between; align-items: center; }
+        /* BENTO GRID LAYOUT */
+        .container {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            grid-template-rows: 1.2fr 1fr 0.8fr;
+            gap: 15px;
+            height: 100vh;
+            padding: 15px;
+            grid-template-areas: 
+                "hero audit"
+                "vision library"
+                "featured featured";
+        }
 
-        /* VIDEO HERO */
-        video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.5); }
-        .overlay { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
+        .bento-card {
+            background: var(--glass);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-        /* TEXT */
-        .lbl { color: var(--fiji); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
-        h1 { font-size: 3rem; line-height: 0.9; margin: 5px 0; }
-        .feed { font-family: monospace; color: var(--fiji); font-size: 0.8rem; margin-top: 10px; opacity: 0.8; }
+        .bento-card:hover { 
+            border-color: var(--fiji-teal); 
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.15);
+        }
+
+        /* AREA MAPPING */
+        .blue-hero { grid-area: hero; cursor: pointer; }
+        .green-audit { grid-area: audit; padding: 25px; }
+        .yellow-vault { grid-area: vision; padding: 25px; }
+        .purple-library { grid-area: library; padding: 25px; }
+        .purple-featured { grid-area: featured; padding: 25px; display: flex; align-items: center; justify-content: space-between; }
+
+        /* VIDEO HERO STYLING */
+        .hero-video {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; z-index: 0;
+            filter: brightness(0.4) contrast(1.1);
+            background: #000;
+        }
+
+        .hero-overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(to top, rgba(10,10,10,0.95), transparent 70%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 40px;
+        }
+
+        /* TYPOGRAPHY */
+        .label { color: var(--fiji-teal); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; font-weight: 800; }
+        h1 { font-size: clamp(2rem, 5vw, 4rem); text-transform: uppercase; letter-spacing: -2px; margin: 0; line-height: 0.85; }
+        h2 { font-size: 1.2rem; text-transform: uppercase; margin: 0; letter-spacing: 1px; font-weight: 600; }
+        p { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.5; margin-top: 10px; }
+
+        /* LIVE FEEDS */
+        .status-feed { 
+            font-family: 'Courier New', monospace; 
+            font-size: 0.85rem; 
+            color: var(--fiji-teal); 
+            margin-top: 20px; 
+            line-height: 1.6; 
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 12px;
+        }
 
         /* MODAL */
-        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 100; text-align: center; padding: 20px; }
+        #about-modal {
+            position: fixed; inset: 0; background: rgba(5,5,5,0.98);
+            z-index: 1000; display: none; flex-direction: column;
+            justify-content: center; align-items: center; padding: 60px;
+            backdrop-filter: blur(30px);
+            cursor: pointer;
+        }
 
-        @media (max-width: 800px) { .container { grid-template-areas: "hero" "audit" "vision" "library" "feat"; grid-template-columns: 1fr; overflow-y: auto; height: auto; } body { overflow-y: auto; } }
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                grid-template-areas: "hero" "audit" "vision" "library" "featured";
+                overflow-y: auto; height: auto;
+            }
+            body { overflow-y: auto; }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="card hero" onclick="toggle(true)">
-            <video autoplay muted loop playsinline>
+        <div class="bento-card blue-hero" onclick="toggleModal(true)">
+            <video id="heroVideo" autoplay muted loop playsinline class="hero-video">
+                <source src="assets/hero-loop.webm" type="video/webm">
                 <source src="assets/hero-loop.mp4" type="video/mp4">
+                <img src="assets/hero-loop.gif" alt="Hero Fallback">
             </video>
-            <div class="overlay">
-                <span class="lbl">Principal Architect</span>
+            <div class="hero-overlay">
+                <span class="label">Principal Architect</span>
                 <h1>Jonathan Taylor</h1>
-                <p>AI Orchestration & Multimedia</p>
+                <p style="color: var(--fiji-teal); opacity: 1;">Multimedia Professional & AI Systems Architect</p>
             </div>
         </div>
 
-        <div class="card audit">
-            <span class="lbl">Efficiency Engine</span>
-            <h3>Automation Audit</h3>
-            <div class="feed">[SYS]: audit_agent.py active<br>[ROI]: 240hrs recovered</div>
-        </div>
-
-        <div class="card vision">
-            <span class="lbl">Vision Vault</span>
-            <h3>Inventory Scan</h3>
-            <div class="feed">> vision_node.py scanning...<br>> Status: Online</div>
-        </div>
-
-        <div class="card library">
-            <span class="lbl">Archive</span>
-            <h3>Blog Library</h3>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">Accessing content.json...</p>
-        </div>
-
-        <div class="card feat">
-            <div>
-                <span class="lbl">Featured Broadcast</span>
-                <h3>System Online: The AI Audit Engine</h3>
+        <div class="bento-card green-audit">
+            <span class="label">Efficiency Engine</span>
+            <h2>Automation Audit</h2>
+            <div class="status-feed">
+                [SYSTEM]: Loading audit_agent.py...<br>
+                [ROI]: Tracking 240h/yr recovery<br>
+                [STATUS]: Optimization Node Active
             </div>
-            <div style="width: 80px; height: 80px; border: 1px dashed var(--fiji); border-radius: 10px;"></div>
+        </div>
+
+        <div class="bento-card yellow-vault">
+            <span class="label">Vision Vault</span>
+            <h2>Inventory Scan</h2>
+            <div id="vision-feed" class="status-feed">
+                > Connecting to vision_node.py...<br>
+                > Analyzing collectibles...<br>
+                > Status: Awaiting Scan Data
+            </div>
+        </div>
+
+        <div class="bento-card purple-library">
+            <span class="label">The Archive</span>
+            <h2>Blog Library</h2>
+            <p>Accessing the "Modern Druid" broadcast deck. 12 broadcasts remaining.</p>
+        </div>
+
+        <div class="bento-card purple-featured">
+            <div style="max-width: 75%;">
+                <span class="label">Featured Broadcast</span>
+                <h2>System Online: The AI Audit Engine</h2>
+                <p>Tactical AI orchestration for small business scalability.</p>
+            </div>
+            <div style="width: 140px; height: 140px; border: 1px dashed var(--fiji-teal); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--fiji-teal); background: rgba(0,255,204,0.03);">
+                THUMBNAIL
+            </div>
         </div>
     </div>
 
-    <div id="modal" onclick="toggle(false)">
-        <div>
-            <h2 style="color: var(--fiji); font-size: 2.5rem;">The Modern Druid</h2>
-            <p style="max-height: 400px; max-width: 600px; margin-top: 20px; line-height: 1.6;">
-                I bridge technical field operations with cinematic storytelling. From underwater videography to robotic camera data pipelines, I build automation that serves creative intent.
-            </p>
-        </div>
+    <div id="about-modal" onclick="toggleModal(false)">
+        <h2 style="color: var(--fiji-teal); font-size: 3rem; margin-bottom: 20px;">The Modern Druid</h2>
+        <p style="max-width: 750px; text-align: center; font-size: 1.3rem; line-height: 1.8; color: #eee;">
+            I bridge the gap between technical field operations and digital storytelling. 
+            From underwater videography to robotic camera data pipelines, 
+            I specialize in "vibe coding" and AI orchestration that serves creative intent.
+        </p>
+        <p style="margin-top: 40px; font-size: 0.8rem; letter-spacing: 3px; color: var(--fiji-teal);">CLICK TO DISMISS</p>
     </div>
 
     <script>
-        function toggle(show) { document.getElementById('modal').style.display = show ? 'flex' : 'none'; }
+        function toggleModal(show) {
+            document.getElementById('about-modal').style.display = show ? 'flex' : 'none';
+        }
+
+        // Force Autoplay Check
+        window.addEventListener('load', function() {
+            const video = document.getElementById('heroVideo');
+            video.play().catch(error => {
+                console.log("Autoplay blocked. User interaction required.");
+            });
+        });
     </script>
 </body>
-</html> 
+</html>
