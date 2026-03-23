@@ -3,323 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan Taylor | AI Systems Architect</title>
+    <title>AI Strategy Audit | Local Architect Node</title>
     <style>
-        :root {
-            --fiji-teal: #00ffcc;
-            --dark-bg: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --accent-purple: #bf94ff;
-        }
-
-        /* 1. RESET & LAYOUT */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html {
-            height: 100vh; width: 100vw;
-            overflow: hidden; 
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            font-family: 'Inter', -apple-system, sans-serif;
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            grid-template-rows: 1.2fr 1fr 0.8fr;
-            gap: 15px;
-            height: 100vh;
-            padding: 15px;
-            grid-template-areas: 
-                "hero audit"
-                "vision library"
-                "featured featured";
-        }
-
-        /* 2. BENTO CARDS */
-        .bento-card {
-            background: var(--glass);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .bento-card:hover { 
-            border-color: var(--fiji-teal); 
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.1);
-        }
-
-        .blue-hero { grid-area: hero; cursor: pointer; }
-        .green-audit { grid-area: audit; padding: 30px; display: flex; flex-direction: column; }
-        .yellow-vault { grid-area: vision; padding: 25px; }
-        .purple-library { grid-area: library; padding: 25px; }
-        .purple-featured { grid-area: featured; padding: 25px; display: flex; align-items: center; justify-content: space-between; }
-
-        /* 3. HERO VIDEO */
-        .hero-video {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover; z-index: 0;
-            filter: brightness(0.4) contrast(1.1);
-        }
-
-        .hero-overlay {
-            position: absolute; inset: 0; z-index: 1;
-            background: linear-gradient(to top, rgba(10,10,10,0.95), transparent 70%);
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 40px;
-        }
-
-        /* 4. UI ELEMENTS */
-        .label { color: var(--fiji-teal); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; margin-bottom: 8px; display: block; }
-        .roi-val { font-family: monospace; font-size: 2.2rem; color: var(--fiji-teal); margin: 10px 0; text-shadow: 0 0 10px rgba(0,255,204,0.3); }
-        
-        .audit-input {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            color: #fff;
-            margin-top: 15px;
-            font-family: monospace;
-            outline: none;
-        }
-        .audit-input:focus { border-color: var(--fiji-teal); }
-
-        .btn-fiji {
-            background: var(--fiji-teal);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            transition: 0.3s;
-        }
-        .btn-fiji:hover { filter: brightness(1.2); }
-
-        .status-feed { 
-            font-family: 'Courier New', monospace; 
-            font-size: 0.85rem; 
-            color: var(--fiji-teal); 
-            margin-top: 15px; 
-            line-height: 1.6; 
-            background: rgba(0,0,0,0.4);
-            padding: 15px;
-            border-radius: 12px;
-        }
-
-        /* 5. MODAL STYLING */
-        #about-modal {
-            display:none; 
-            position:fixed; 
-            inset:0; 
-            background:rgba(0,0,0,0.92); 
-            z-index:1000; 
-            align-items:center; 
-            justify-content:center; 
-            backdrop-filter: blur(20px);
-        }
-
-        .modal-box {
-            background: #111;
-            border: 1px solid var(--fiji-teal);
-            padding: 40px;
-            border-radius: 24px;
-            max-width: 600px;
-            width: 90%;
-            box-shadow: 0 0 50px rgba(0, 255, 204, 0.15);
-        }
-
-        /* 6. RESPONSIVE */
-        @media (max-width: 900px) {
-            .container { grid-template-areas: "hero" "audit" "vision" "library" "featured"; grid-template-columns: 1fr; overflow-y: auto; height: auto; }
-            body { overflow-y: auto; }
-        }
+        :root { --primary: #00ffcc; --bg: #0a0a0a; --text: #e0e0e0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; display: flex; justify-content: center; padding: 20px; }
+        .container { max-width: 800px; width: 100%; background: #111; padding: 30px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        .status-bar { font-size: 0.85rem; margin-bottom: 20px; padding: 10px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #444; }
+        .status-online { border-left-color: var(--primary); color: var(--primary); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        button { background: var(--primary); color: black; border: none; padding: 12px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #00d4aa; transform: translateY(-2px); }
+        #audit-result { margin-top: 30px; padding: 20px; background: #1a1a1a; border-radius: 8px; border: 1px dashed #444; min-height: 100px; white-space: pre-wrap; }
+        .loading { color: var(--primary); font-style: italic; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="bento-card blue-hero" onclick="toggleModal(true)">
-            <video id="heroVideo" autoplay muted loop playsinline class="hero-video">
-                <source src="assets/hero-loop.webm" type="video/webm">
-            </video>
-            <div class="hero-overlay">
-                <span class="label">Principal Architect</span>
-                <h1>Jonathan Taylor</h1>
-                <p style="color: var(--fiji-teal); font-weight: 500;">AI Orchestration & Multimedia Systems</p>
-            </div>
-        </div>
+<div class="container">
+    <h1>AI Systems Audit</h1>
+    <p>Generate a professional AI automation roadmap for your business.</p>
 
-        <div class="bento-card green-audit" id="audit-card">
-            <span class="label">Efficiency Engine</span>
-            <div id="audit-flow">
-                <h2>System ROI Tracker</h2>
-                <div class="roi-val" id="roi-counter">248.50 HRS</div>
-                <p style="font-size: 0.8rem; opacity: 0.6;">Automated Operational Recovery (Current Quarter)</p>
-                <button class="btn-fiji" onclick="startAudit()">INITIATE FREE AUDIT</button>
-            </div>
-        </div>
-
-        <div class="bento-card yellow-vault">
-            <span class="label">Vision Vault</span>
-            <h2>Inventory Scan</h2>
-            <div id="vision-feed" class="status-feed">
-                > vision_node.py: STANDBY<br>
-                > Status: Awaiting Scan Data
-            </div>
-        </div>
-
-        <div class="bento-card purple-library">
-            <span class="label">The Archive</span>
-            <h2>Broadcast Deck</h2>
-            <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 10px;">Technical briefings on automation, database management, and international infrastructure.</p>
-        </div>
-
-        <div class="bento-card purple-featured">
-            <div style="max-width: 75%;">
-                <span class="label" style="color: var(--accent-purple);">Active Case Study</span>
-                <h2 style="font-size: 1.4rem; margin: 8px 0;">Autonomous ROI Orchestration</h2>
-                <p style="font-size: 0.85rem; opacity: 0.8; line-height: 1.5;">
-                    A decoupled lead-gen engine utilizing <b>Vercel Proxy Nodes</b> and <b>Gemini 1.5</b> to provide real-time architectural audits.
-                    <br><span style="color: var(--fiji-teal); font-family: monospace; font-size: 0.75rem;">> STATUS: PIPELINE_SECURED // KEY_ENCRYPTED</span>
-                </p>
-            </div>
-            <div style="width: 80px; height: 80px; border: 2px solid var(--accent-purple); border-radius: 18px; display: flex; align-items: center; justify-content: center; background: rgba(191, 148, 255, 0.1);">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </div>
-        </div>
+    <div id="status-box" class="status-bar">
+        Status: <span id="status-text">Checking Local Node...</span>
     </div>
 
-    <div id="about-modal" onclick="toggleModal(false)">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <h2 style="color:var(--fiji-teal);">THE MODERN DRUID</h2>
-            <p style="margin-top:20px; line-height: 1.6;">Bridging technical field operations with cinematic storytelling.</p>
+    <form id="auditForm">
+        <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" id="bizName" placeholder="e.g. Heroic Comics & Games" required>
         </div>
+        <div class="form-group">
+            <label>Industry</label>
+            <select id="industry">
+                <option value="Retail">Local Retail (LGS/Comics)</option>
+                <option value="Creative">Creative Services (Film/Music)</option>
+                <option value="Technical">Technical Operations</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Current Biggest Bottleneck</label>
+            <textarea id="bottleneck" rows="3" placeholder="e.g. Manual inventory entry taking 10 hours a week..."></textarea>
+        </div>
+        <button type="submit" id="submitBtn">Initiate Free Audit</button>
+    </form>
+
+    <div id="audit-result">
+        Your AI-generated ROI report will appear here...
     </div>
+</div>
 
-    <script>
-        // --- 1. COUNTER ---
-        let hrs = 248.50;
-        setInterval(() => {
-            hrs += Math.random() * 0.01;
-            const el = document.getElementById('roi-counter');
-            if(el) el.innerText = hrs.toFixed(2) + " HRS";
-        }, 3000);
+<script>
+    const statusText = document.getElementById('status-text');
+    const statusBox = document.getElementById('status-box');
+    const auditForm = document.getElementById('auditForm');
+    const resultDiv = document.getElementById('audit-result');
+    const submitBtn = document.getElementById('submitBtn');
 
-        // --- 2. AUDIT LOGIC (7 STEPS) ---
-        const questions = [
-            "What is your name?",
-            "Primary manual bottleneck?",
-            "Hours per week lost?",
-            "Current tech stack?",
-            "Using AI currently (Yes/No)?",
-            "Target 'Hours Saved' goal?",
-            "Email for the secure copy?"
-        ];
-        let step = 0;
-        let auditData = [];
-
-        function startAudit() {
-            step = 0; auditData = [];
-            showQuestion();
-        }
-
-        function showQuestion() {
-            const flow = document.getElementById('audit-flow');
-            flow.innerHTML = `
-                <span class="label">Step ${step + 1} of 7</span>
-                <h2 style="font-size: 1.1rem; margin-top: 10px;">${questions[step]}</h2>
-                <input type="text" id="q-input" class="audit-input" placeholder="Enter response..." autocomplete="off">
-                <button class="btn-fiji" onclick="submitAnswer()">CONTINUE -></button>
-            `;
-            const input = document.getElementById('q-input');
-            input.focus();
-            input.addEventListener('keypress', (e) => { if(e.key === 'Enter') submitAnswer(); });
-        }
-
-        function submitAnswer() {
-            const val = document.getElementById('q-input').value;
-            if(!val) return;
-            auditData.push(val);
-            step++;
-            if(step < questions.length) {
-                showQuestion();
-            } else {
-                finishAudit();
+    // 1. Check if the Docker Container is actually running
+    async function checkConnection() {
+        try {
+            const response = await fetch('http://localhost:3000/api/status');
+            if (response.ok) {
+                statusText.innerText = "🟢 Local Architect Node Active";
+                statusBox.classList.add('status-online');
+                submitBtn.disabled = false;
             }
+        } catch (err) {
+            statusText.innerText = "🔴 Local Node Offline (Run 'node server.js' in Docker)";
+            statusBox.classList.remove('status-online');
+            submitBtn.disabled = true;
         }
+    }
 
-        async function finishAudit() {
-            const flow = document.getElementById('audit-flow');
-            const [name, bottleneck, hours, stack, aiStatus, goal, email] = auditData;
+    // 2. Handle the Audit Generation
+    auditForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            businessName: document.getElementById('bizName').value,
+            industry: document.getElementById('industry').value,
+            bottleneck: document.getElementById('bottleneck').value
+        };
 
-            flow.innerHTML = `
-                <h2 style="color: var(--fiji-teal);">Handshaking...</h2>
-                <div class="status-feed">
-                    > [SYS]: Routing to Proxy Node...<br>
-                    > [SYS]: Encrypting payload for ${name}...
-                </div>
-            `;
+        resultDiv.innerHTML = '<p class="loading">Architect is analyzing your workflow... please wait.</p>';
+        submitBtn.innerText = "Processing...";
+        submitBtn.disabled = true;
 
-            try {
-                // CALLING YOUR VERCEL PROXY
-                const response = await fetch('/api/generate-audit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, bottleneck, hours, stack, goal })
-                });
+        try {
+            const response = await fetch('http://localhost:3000/api/generate-audit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
 
-                const data = await response.json();
+            if (!response.ok) throw new Error('Server Error');
 
-                // INJECT REPORT INTO MODAL
-                const modal = document.getElementById('about-modal');
-                modal.querySelector('.modal-box').innerHTML = `
-                    <div style="font-family:monospace; color:#fff;">
-                        <h2 style="color:var(--fiji-teal); border-bottom:1px solid var(--fiji-teal); padding-bottom:10px;">SECURE AUDIT: ${name.toUpperCase()}</h2>
-                        <div style="margin-top:20px; line-height:1.6; font-size:0.9rem;">${data.audit.replace(/\n/g, '<br>')}</div>
-                        <hr style="margin:20px 0; border:0; border-top:1px dashed var(--border);">
-                        <p style="font-size:0.75rem; opacity:0.6;">System: Gemini-1.5-Flash via Vercel Proxy</p>
-                        <button class="btn-fiji" onclick="toggleModal(false)" style="margin-top:20px;">DISMISS SCAN</button>
-                    </div>
-                `;
-                modal.style.display = 'flex';
-
-                flow.innerHTML = `<h2 style="color:var(--fiji-teal);">Analysis Complete</h2><button class="btn-fiji" onclick="location.reload()">NEW SCAN</button>`;
-            } catch (error) {
-                flow.innerHTML = `<p style="color:red;">Link Failed. Check Vercel Node.</p>`;
-            }
+            const data = await response.json();
+            resultDiv.innerHTML = `<h3>Audit Results for ${formData.businessName}</h3>${data.audit}`;
+            
+        } catch (error) {
+            resultDiv.innerHTML = `<p style="color: #ff6666;"><strong>Error:</strong> Could not connect to the local AI engine. Make sure Docker is running on Port 3000.</p>`;
+        } finally {
+            submitBtn.innerText = "Initiate Free Audit";
+            submitBtn.disabled = false;
         }
+    });
 
-        function toggleModal(s) { 
-            document.getElementById('about-modal').style.display = s ? 'flex' : 'none'; 
-        }
+    // Initial connection check
+    checkConnection();
+    // Re-check every 10 seconds to ensure the bridge stays alive
+    setInterval(checkConnection, 10000);
+</script>
 
-        // --- 3. VISION VAULT LIVE DATA ---
-        async function updateVisionVault() {
-            const feed = document.getElementById('vision-feed');
-            try {
-                const response = await fetch('master_usage_log.json');
-                const data = await response.json();
-                const lastItems = data.slice(-2).reverse();
-                let html = `> SYNC: ONLINE<br>`;
-                lastItems.forEach(i => {
-                    const t = i.time.split(' ')[1] || i.time;
-                    html += `> [${t}] ${i.method}: ${i.item.substring(0, 15)}...<br>`;
-                });
-                feed.innerHTML = html;
-            } catch (e) { /* Standby */ }
-        }
-        setInterval(updateVisionVault, 30000);
-        updateVisionVault();
-    </script>
 </body>
 </html>
