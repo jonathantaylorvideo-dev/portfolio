@@ -18,7 +18,22 @@
             min-width: 100%; min-height: 100%;
             object-fit: cover; opacity: 0.4; filter: grayscale(100%) contrast(120%);
         }
-
+        /* This creates the digital 'monitor' effect */
+        .video-background::after {
+            content: "";
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            /* This creates tiny 4px stripes */
+        }
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none; /* This makes sure you can still click buttons 'under' the lines */
+    z-index: 1; /* This puts it exactly in the middle of our sandwich */
+}
         /* --- 🍱 BENTO GRID --- */
         .wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; box-sizing: border-box; }
         
