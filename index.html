@@ -12,14 +12,14 @@
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* RESET & LAYOUT */
+        /* 1. RESET & LAYOUT */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body, html {
             height: 100vh; width: 100vw;
             overflow: hidden; 
             background-color: var(--dark-bg);
             color: #ffffff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
         }
 
         .container {
@@ -35,7 +35,7 @@
                 "featured featured";
         }
 
-        /* BENTO CARDS */
+        /* 2. BENTO CARDS */
         .bento-card {
             background: var(--glass);
             border-radius: 24px;
@@ -58,7 +58,7 @@
         .purple-library { grid-area: library; padding: 25px; }
         .purple-featured { grid-area: featured; padding: 25px; display: flex; align-items: center; justify-content: space-between; }
 
-        /* VIDEO HERO */
+        /* 3. HERO VIDEO */
         .hero-video {
             position: absolute; inset: 0;
             width: 100%; height: 100%;
@@ -73,7 +73,7 @@
             padding: 40px;
         }
 
-        /* AUDIT FUNNEL UI */
+        /* 4. AUDIT FUNNEL UI */
         .label { color: var(--fiji-teal); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; margin-bottom: 8px; display: block; }
         .roi-val { font-family: monospace; font-size: 2.2rem; color: var(--fiji-teal); margin: 10px 0; text-shadow: 0 0 10px rgba(0,255,204,0.3); }
         
@@ -115,7 +115,7 @@
             border-radius: 12px;
         }
 
-        /* RESPONSIVE */
+        /* 5. RESPONSIVE */
         @media (max-width: 900px) {
             .container { grid-template-areas: "hero" "audit" "vision" "library" "featured"; grid-template-columns: 1fr; overflow-y: auto; height: auto; }
             body { overflow-y: auto; }
@@ -150,9 +150,9 @@
         <div class="bento-card yellow-vault">
             <span class="label">Vision Vault</span>
             <h2>Inventory Scan</h2>
-            <div class="status-feed">
+            <div id="vision-feed" class="status-feed">
                 > vision_node.py: INITIALIZED<br>
-                > Camera Buffer: READY<br>
+                > Buffer: READY<br>
                 > Status: Awaiting Scan Data
             </div>
         </div>
@@ -160,7 +160,7 @@
         <div class="bento-card purple-library">
             <span class="label">The Archive</span>
             <h2>Broadcast Deck</h2>
-            <p>12 Technical Briefings Online.</p>
+            <p style="font-size: 0.85rem; opacity: 0.7;">12 Technical Briefings Available.</p>
         </div>
 
         <div class="bento-card purple-featured">
@@ -181,7 +181,7 @@
     </div>
 
     <script>
-        // 1. ROI COUNTER
+        // --- 1. ROI COUNTER ---
         let hrs = 248.50;
         setInterval(() => {
             hrs += Math.random() * 0.01;
@@ -189,8 +189,9 @@
             if(el) el.innerText = hrs.toFixed(2) + " HRS";
         }, 3000);
 
-        // 2. AUDIT FUNNEL LOGIC
+        // --- 2. AUDIT FUNNEL (7 STEPS) ---
         const questions = [
+            "What is your name?",
             "What is your primary manual bottleneck?",
             "How many hours per week are lost to this?",
             "Current software stack (Excel, CRM, etc)?",
@@ -210,7 +211,7 @@
         function showQuestion() {
             const flow = document.getElementById('audit-flow');
             flow.innerHTML = `
-                <span class="label">Step ${step + 1} of 6</span>
+                <span class="label">Step ${step + 1} of 7</span>
                 <h2 style="font-size: 1.1rem; margin-top: 10px;">${questions[step]}</h2>
                 <input type="text" id="q-input" class="audit-input" placeholder="Enter response..." autocomplete="off">
                 <button class="btn-fiji" onclick="submitAnswer()">CONTINUE -></button>
@@ -234,14 +235,14 @@
 
         async function finishAudit() {
             const flow = document.getElementById('audit-flow');
-            const email = auditData[5];
+            const clientName = auditData[0];
+            const clientEmail = auditData[6];
 
             flow.innerHTML = `
-                <h2 style="color: var(--fiji-teal);">Architecting ROI...</h2>
+                <h2 style="color: var(--fiji-teal);">Architecting...</h2>
                 <div class="status-feed">
-                    [SYS]: Analyzing <b>${auditData[0]}</b>...<br>
-                    [SYS]: Calculating recovery model...<br>
-                    [SYS]: Dispatching to ${email}...
+                    [SYS]: Analyzing data for <b>${clientName}</b>...<br>
+                    [SYS]: Pushing to Orchestration Node...
                 </div>
             `;
 
@@ -250,27 +251,48 @@
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        email: email,
-                        bottleneck: auditData[0],
-                        hours: auditData[1],
-                        stack: auditData[2],
-                        ai_usage: auditData[3],
-                        goal: auditData[4],
-                        _subject: `New AI Audit Request: ${auditData[0]}`
+                        name: clientName,
+                        email: clientEmail,
+                        bottleneck: auditData[1],
+                        hours: auditData[2],
+                        stack: auditData[3],
+                        ai_usage: auditData[4],
+                        goal: auditData[5],
+                        _subject: `New Audit Request: ${clientName}`
                     })
                 });
 
                 if (response.ok) {
                     flow.innerHTML = `
-                        <h2 style="color: var(--fiji-teal);">Audit Dispatched</h2>
-                        <p style="margin-top:15px; font-size:0.9rem; opacity:0.8;">The generative analysis for <b>${auditData[0]}</b> is heading to <b>${email}</b>.</p>
-                        <button class="btn-fiji" style="margin-top:20px; background:none; border: 1px solid var(--fiji-teal); color:var(--fiji-teal);" onclick="location.reload()">RESET NODE</button>
+                        <h2 style="color: var(--fiji-teal);">Sent</h2>
+                        <p style="margin-top:10px; font-size:0.9rem;">Analysis for <b>${clientName}</b> dispatched to <b>${clientEmail}</b>.</p>
+                        <button class="btn-fiji" style="margin-top:20px; background:none; border:1px solid var(--fiji-teal); color:var(--fiji-teal);" onclick="location.reload()">RESTART</button>
                     `;
                 }
             } catch (error) {
-                flow.innerHTML = `<p style="color:red; margin-top:20px;">Connection Error. System Offline.</p>`;
+                flow.innerHTML = `<p style="color:red; margin-top:20px;">Node Error. System Offline.</p>`;
             }
         }
+
+        // --- 3. VISION VAULT LIVE DATA ---
+        async function updateVisionVault() {
+            const feed = document.getElementById('vision-feed');
+            try {
+                const response = await fetch('master_usage_log.json');
+                const data = await response.json();
+                const lastItems = data.slice(-3).reverse();
+                let html = `> SYSTEM: SYNC_COMPLETE<br>`;
+                lastItems.forEach(i => {
+                    const time = i.time.split(' ')[1] || i.time;
+                    html += `> [${time}] ${i.method}: ${i.item.substring(0, 15)}...<br>`;
+                });
+                feed.innerHTML = html;
+            } catch (e) {
+                // Keep default state if fetch fails
+            }
+        }
+        setInterval(updateVisionVault, 30000);
+        updateVisionVault();
 
         function toggleModal(s) { document.getElementById('about-modal').style.display = s ? 'flex' : 'none'; }
     </script>
