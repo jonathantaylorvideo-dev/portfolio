@@ -10,6 +10,7 @@
             --dark-bg: #0a0a0a;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #bf94ff;
         }
 
         /* 1. RESET & LAYOUT */
@@ -73,13 +74,13 @@
             padding: 40px;
         }
 
-        /* 4. AUDIT FUNNEL UI */
+        /* 4. UI ELEMENTS */
         .label { color: var(--fiji-teal); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; margin-bottom: 8px; display: block; }
         .roi-val { font-family: monospace; font-size: 2.2rem; color: var(--fiji-teal); margin: 10px 0; text-shadow: 0 0 10px rgba(0,255,204,0.3); }
         
         .audit-input {
             width: 100%;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;
@@ -115,7 +116,29 @@
             border-radius: 12px;
         }
 
-        /* 5. RESPONSIVE */
+        /* 5. MODAL STYLING */
+        #about-modal {
+            display:none; 
+            position:fixed; 
+            inset:0; 
+            background:rgba(0,0,0,0.92); 
+            z-index:1000; 
+            align-items:center; 
+            justify-content:center; 
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-box {
+            background: #111;
+            border: 1px solid var(--fiji-teal);
+            padding: 40px;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.15);
+        }
+
+        /* 6. RESPONSIVE */
         @media (max-width: 900px) {
             .container { grid-template-areas: "hero" "audit" "vision" "library" "featured"; grid-template-columns: 1fr; overflow-y: auto; height: auto; }
             body { overflow-y: auto; }
@@ -128,7 +151,6 @@
         <div class="bento-card blue-hero" onclick="toggleModal(true)">
             <video id="heroVideo" autoplay muted loop playsinline class="hero-video">
                 <source src="assets/hero-loop.webm" type="video/webm">
-                <source src="assets/hero-loop.mp4" type="video/mp4">
             </video>
             <div class="hero-overlay">
                 <span class="label">Principal Architect</span>
@@ -151,8 +173,7 @@
             <span class="label">Vision Vault</span>
             <h2>Inventory Scan</h2>
             <div id="vision-feed" class="status-feed">
-                > vision_node.py: INITIALIZED<br>
-                > Buffer: READY<br>
+                > vision_node.py: STANDBY<br>
                 > Status: Awaiting Scan Data
             </div>
         </div>
@@ -160,28 +181,33 @@
         <div class="bento-card purple-library">
             <span class="label">The Archive</span>
             <h2>Broadcast Deck</h2>
-            <p style="font-size: 0.85rem; opacity: 0.7;">12 Technical Briefings Available.</p>
+            <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 10px;">Technical briefings on automation, database management, and international infrastructure.</p>
         </div>
 
         <div class="bento-card purple-featured">
-            <div style="max-width: 70%;">
-                <span class="label">Featured Broadcast</span>
-                <h2>Agentic Workflow Design</h2>
-                <p style="font-size: 0.85rem;">Deploying autonomous LLM agents for enterprise scalability.</p>
+            <div style="max-width: 75%;">
+                <span class="label" style="color: var(--accent-purple);">Active Case Study</span>
+                <h2 style="font-size: 1.4rem; margin: 8px 0;">Autonomous ROI Orchestration</h2>
+                <p style="font-size: 0.85rem; opacity: 0.8; line-height: 1.5;">
+                    A decoupled lead-gen engine utilizing <b>Vercel Proxy Nodes</b> and <b>Gemini 1.5</b> to provide real-time architectural audits.
+                    <br><span style="color: var(--fiji-teal); font-family: monospace; font-size: 0.75rem;">> STATUS: PIPELINE_SECURED // KEY_ENCRYPTED</span>
+                </p>
             </div>
-            <div style="width: 100px; height: 100px; border: 1px dashed var(--fiji-teal); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: var(--fiji-teal);">LOGO</div>
+            <div style="width: 80px; height: 80px; border: 2px solid var(--accent-purple); border-radius: 18px; display: flex; align-items: center; justify-content: center; background: rgba(191, 148, 255, 0.1);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
         </div>
     </div>
 
-    <div id="about-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(20px);" onclick="toggleModal(false)">
-        <div style="text-align:center; padding:40px;">
-            <h2 style="color:var(--fiji-teal); font-size:3rem; letter-spacing: -2px;">THE MODERN DRUID</h2>
-            <p style="max-width:600px; margin-top:20px; line-height: 1.6; opacity: 0.8;">Bridging technical field operations with cinematic storytelling. I build automation that serves creative intent.</p>
+    <div id="about-modal" onclick="toggleModal(false)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h2 style="color:var(--fiji-teal);">THE MODERN DRUID</h2>
+            <p style="margin-top:20px; line-height: 1.6;">Bridging technical field operations with cinematic storytelling.</p>
         </div>
     </div>
 
     <script>
-        // --- 1. ROI COUNTER ---
+        // --- 1. COUNTER ---
         let hrs = 248.50;
         setInterval(() => {
             hrs += Math.random() * 0.01;
@@ -189,22 +215,21 @@
             if(el) el.innerText = hrs.toFixed(2) + " HRS";
         }, 3000);
 
-        // --- 2. AUDIT FUNNEL (7 STEPS) ---
+        // --- 2. AUDIT LOGIC (7 STEPS) ---
         const questions = [
             "What is your name?",
-            "What is your primary manual bottleneck?",
-            "How many hours per week are lost to this?",
-            "Current software stack (Excel, CRM, etc)?",
-            "Are you currently using AI tools (Yes/No)?",
-            "Target monthly 'Hours Saved' goal?",
-            "Email to receive your Generative ROI Report?"
+            "Primary manual bottleneck?",
+            "Hours per week lost?",
+            "Current tech stack?",
+            "Using AI currently (Yes/No)?",
+            "Target 'Hours Saved' goal?",
+            "Email for the secure copy?"
         ];
         let step = 0;
         let auditData = [];
 
         function startAudit() {
-            step = 0;
-            auditData = [];
+            step = 0; auditData = [];
             showQuestion();
         }
 
@@ -235,43 +260,47 @@
 
         async function finishAudit() {
             const flow = document.getElementById('audit-flow');
-            const clientName = auditData[0];
-            const clientEmail = auditData[6];
+            const [name, bottleneck, hours, stack, aiStatus, goal, email] = auditData;
 
             flow.innerHTML = `
-                <h2 style="color: var(--fiji-teal);">Architecting...</h2>
+                <h2 style="color: var(--fiji-teal);">Handshaking...</h2>
                 <div class="status-feed">
-                    [SYS]: Analyzing data for <b>${clientName}</b>...<br>
-                    [SYS]: Pushing to Orchestration Node...
+                    > [SYS]: Routing to Proxy Node...<br>
+                    > [SYS]: Encrypting payload for ${name}...
                 </div>
             `;
 
             try {
-                const response = await fetch("https://formspree.io/f/xojkoqlq", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        name: clientName,
-                        email: clientEmail,
-                        bottleneck: auditData[1],
-                        hours: auditData[2],
-                        stack: auditData[3],
-                        ai_usage: auditData[4],
-                        goal: auditData[5],
-                        _subject: `New Audit Request: ${clientName}`
-                    })
+                // CALLING YOUR VERCEL PROXY
+                const response = await fetch('/api/generate-audit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, bottleneck, hours, stack, goal })
                 });
 
-                if (response.ok) {
-                    flow.innerHTML = `
-                        <h2 style="color: var(--fiji-teal);">Sent</h2>
-                        <p style="margin-top:10px; font-size:0.9rem;">Analysis for <b>${clientName}</b> dispatched to <b>${clientEmail}</b>.</p>
-                        <button class="btn-fiji" style="margin-top:20px; background:none; border:1px solid var(--fiji-teal); color:var(--fiji-teal);" onclick="location.reload()">RESTART</button>
-                    `;
-                }
+                const data = await response.json();
+
+                // INJECT REPORT INTO MODAL
+                const modal = document.getElementById('about-modal');
+                modal.querySelector('.modal-box').innerHTML = `
+                    <div style="font-family:monospace; color:#fff;">
+                        <h2 style="color:var(--fiji-teal); border-bottom:1px solid var(--fiji-teal); padding-bottom:10px;">SECURE AUDIT: ${name.toUpperCase()}</h2>
+                        <div style="margin-top:20px; line-height:1.6; font-size:0.9rem;">${data.audit.replace(/\n/g, '<br>')}</div>
+                        <hr style="margin:20px 0; border:0; border-top:1px dashed var(--border);">
+                        <p style="font-size:0.75rem; opacity:0.6;">System: Gemini-1.5-Flash via Vercel Proxy</p>
+                        <button class="btn-fiji" onclick="toggleModal(false)" style="margin-top:20px;">DISMISS SCAN</button>
+                    </div>
+                `;
+                modal.style.display = 'flex';
+
+                flow.innerHTML = `<h2 style="color:var(--fiji-teal);">Analysis Complete</h2><button class="btn-fiji" onclick="location.reload()">NEW SCAN</button>`;
             } catch (error) {
-                flow.innerHTML = `<p style="color:red; margin-top:20px;">Node Error. System Offline.</p>`;
+                flow.innerHTML = `<p style="color:red;">Link Failed. Check Vercel Node.</p>`;
             }
+        }
+
+        function toggleModal(s) { 
+            document.getElementById('about-modal').style.display = s ? 'flex' : 'none'; 
         }
 
         // --- 3. VISION VAULT LIVE DATA ---
@@ -280,21 +309,17 @@
             try {
                 const response = await fetch('master_usage_log.json');
                 const data = await response.json();
-                const lastItems = data.slice(-3).reverse();
-                let html = `> SYSTEM: SYNC_COMPLETE<br>`;
+                const lastItems = data.slice(-2).reverse();
+                let html = `> SYNC: ONLINE<br>`;
                 lastItems.forEach(i => {
-                    const time = i.time.split(' ')[1] || i.time;
-                    html += `> [${time}] ${i.method}: ${i.item.substring(0, 15)}...<br>`;
+                    const t = i.time.split(' ')[1] || i.time;
+                    html += `> [${t}] ${i.method}: ${i.item.substring(0, 15)}...<br>`;
                 });
                 feed.innerHTML = html;
-            } catch (e) {
-                // Keep default state if fetch fails
-            }
+            } catch (e) { /* Standby */ }
         }
         setInterval(updateVisionVault, 30000);
         updateVisionVault();
-
-        function toggleModal(s) { document.getElementById('about-modal').style.display = s ? 'flex' : 'none'; }
     </script>
 </body>
 </html>
