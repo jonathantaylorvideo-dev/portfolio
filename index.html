@@ -9,7 +9,7 @@
         
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow-x: hidden; }
 
-        /* --- 🎥 VIDEO HERO BACKGROUND --- */
+        /* --- LAYER 1: 🎥 VIDEO BACKGROUND --- */
         .video-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; overflow: hidden;
@@ -18,24 +18,26 @@
             min-width: 100%; min-height: 100%;
             object-fit: cover; opacity: 0.4; filter: grayscale(100%) contrast(120%);
         }
-        /* This creates the digital 'monitor' effect */
+
+        /* --- LAYER 2: 📺 THE SCANLINE LAYER (The Glass) --- */
         .video-background::after {
             content: "";
             position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            /* This creates tiny 4px stripes */
+            top: 0; left: 0; width: 100%; height: 100%;
+            /* This creates the digital stripes and subtle chromatic shift */
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none; 
+            z-index: 1; 
         }
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 4px, 3px 100%;
-    pointer-events: none; /* This makes sure you can still click buttons 'under' the lines */
-    z-index: 1; /* This puts it exactly in the middle of our sandwich */
-}
-        /* --- 🍱 BENTO GRID --- */
-        .wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; box-sizing: border-box; }
+
+        /* --- LAYER 3: 🍱 THE UI BENTO GRID (The Interactive Layer) --- */
+        .wrapper { 
+            position: relative; 
+            z-index: 10; /* This pushes the UI on top of the scanlines */
+            max-width: 1200px; margin: 0 auto; padding: 60px 20px; box-sizing: border-box; 
+        }
         
         .bento-grid {
             display: grid;
@@ -52,23 +54,15 @@
         }
         .card:hover { border-color: var(--primary); transform: translateY(-5px); }
 
-        /* --- TITLE CLICK-THROUGH --- */
-        .hero-card { 
-            grid-column: span 3; cursor: pointer; 
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        .hero-card h1 { 
-            font-size: 3.5rem; margin: 0; color: var(--primary); 
-            text-transform: uppercase; letter-spacing: -2px; 
-        }
+        .hero-card { grid-column: span 3; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
+        .hero-card h1 { font-size: 3.5rem; margin: 0; color: var(--primary); text-transform: uppercase; letter-spacing: -2px; }
         .hero-card p { font-size: 1.2rem; opacity: 0.8; margin-top: 10px; }
 
-        /* --- AI AUDIT TOOL (SQUARE TILE) --- */
         .audit-card { grid-column: span 2; border: 1px solid var(--primary); background: rgba(0, 255, 204, 0.05); }
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; background: #444; }
         .online-dot { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
-        /* --- THE MODAL (ABOUT & AUDIT) --- */
+        /* --- MODALS --- */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%; background: rgba(0,0,0,0.92);
@@ -81,17 +75,9 @@
         }
         .close-btn { position: absolute; top: 20px; right: 30px; font-size: 30px; color: #555; cursor: pointer; }
 
-        /* --- FORM STYLES --- */
-        input, select, textarea { 
-            width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; 
-            color: white; border-radius: 8px; margin-top: 10px; 
-        }
-        button { 
-            width: 100%; padding: 15px; margin-top: 20px; background: var(--primary); 
-            color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;
-        }
+        input, select, textarea { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 8px; margin-top: 10px; }
+        button { width: 100%; padding: 15px; margin-top: 20px; background: var(--primary); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
 
-        /* Responsive */
         @media (max-width: 900px) {
             .bento-grid { grid-template-columns: 1fr; }
             .hero-card, .audit-card { grid-column: span 1; }
@@ -148,7 +134,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('about-modal')">&times;</span>
             <h2 style="color: var(--primary)">About Jonathan</h2>
-            <p>I bridge the gap between complex backend systems and creative storytelling. With a background in film production and a deep dive into AI agentic workflows, I build automation that feels human.</p>
+            <p>I bridge the gap between complex backend systems and creative storytelling.</p>
             <p>From the St. Louis hobby retail scene to specialized field operations, my goal is solo-op efficiency at enterprise scale.</p>
         </div>
     </div>
@@ -163,12 +149,10 @@
 <script>
     const API_BASE = "https://ai-strategy-engine.onrender.com";
 
-    // Modal Controls
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; }
 
-    // Connection Check
     async function checkConnection() {
         const dot = document.getElementById('status-dot');
         const text = document.getElementById('status-text');
@@ -185,7 +169,6 @@
         }
     }
 
-    // Form Handling
     document.getElementById('auditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
