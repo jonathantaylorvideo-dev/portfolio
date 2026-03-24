@@ -42,7 +42,7 @@
         
         input[type="text"] { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid #222; color: #fff; border-radius: 8px; font-family: monospace; font-size: 0.8rem; outline: none; box-sizing: border-box; }
 
-        #audit-chat-window { height: 200px; overflow-y: auto; margin-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; border-bottom: 1px solid rgba(0,204,163,0.1); padding-bottom: 10px; }
+        #audit-chat-window { height: 250px; overflow-y: auto; margin-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; padding-right: 10px; }
         .msg { margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; opacity: 0; animation: fadeIn 0.5s forwards; }
         .msg.bot { color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; }
         .msg.user { color: #fff; text-align: right; opacity: 0.7; font-family: monospace; }
@@ -64,7 +64,7 @@
                 <h1>Jonathan D. Taylor</h1>
                 <p style="opacity: 0.7;">AI Systems Architect & Agentic Workflow Designer</p>
             </div>
-            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>AI Auditor</h3><p style="font-size:0.75rem; opacity:0.5;">Interactive Diagnostic</p></div>
+            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>AI Auditor</h3><p style="font-size:0.75rem; opacity:0.5;">Interactive Discovery</p></div>
             <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.75rem; opacity:0.5;">Adventures of Intrigue</p></div>
             <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.75rem; opacity:0.5;">Multimodal Node</p></div>
             <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.75rem; opacity:0.5;">System Events</p></div>
@@ -79,7 +79,6 @@
     </div>
 
 <script>
-    // MATCHED TO YOUR LIVE RENDER SCREENSHOT
     const API_BASE = "https://ai-strategy-engine.onrender.com";
 
     const ui = {
@@ -92,23 +91,26 @@
             
             if (type === 'Audit') {
                 body.innerHTML = `
-                    <div style="position:relative; min-height:450px; overflow:hidden; background:#000; border-radius:12px; padding:25px; border:1px solid rgba(0,204,163,0.3);">
-                        <canvas id="matrix-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.1; z-index:1; pointer-events:none;"></canvas>
+                    <div style="position:relative; min-height:480px; overflow:hidden; background:#000; border-radius:12px; padding:25px; border:1px solid rgba(0,204,163,0.3);">
+                        <canvas id="matrix-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.12; z-index:1; pointer-events:none;"></canvas>
                         <div style="position:relative; z-index:2;">
                             <p style="color:var(--primary); font-family:monospace; font-size:0.6rem; margin:0; letter-spacing:1px;">[ SYSTEM_DIAGNOSTIC_INITIATED ]</p>
                             <p style="color:var(--primary); font-family:monospace; font-size:0.6rem; margin:0; letter-spacing:1px; margin-bottom:20px;">[ ARCHITECT_ID ]: J.TAYLOR_042</p>
                             <div id="audit-chat-window"></div>
                             <div id="audit-input-area" style="border-top:1px solid rgba(0,204,163,0.1); padding-top:15px;">
                                 <div style="display:flex; gap:10px;">
-                                    <input type="text" id="client-input" placeholder="Describe your business bottleneck..." onkeypress="if(event.key==='Enter') ui.sendAuditMessage()">
+                                    <input type="text" id="client-input" placeholder="Analyze specific friction point..." onkeypress="if(event.key==='Enter') ui.sendAuditMessage()">
                                     <button class="node-btn" onclick="ui.sendAuditMessage()">SEND</button>
                                 </div>
                                 <button class="node-btn" onclick="ui.generateFinalAudit()" style="width:100%; margin-top:10px; border-color:var(--snap-pink); color:var(--snap-pink);">[ GENERATE_FULL_AUDIT ]</button>
                             </div>
                         </div>
                     </div>`;
-                setTimeout(() => { ui.initMatrix(); ui.addAuditMsg("bot", "System online. I am your AI Auditor. Please describe the primary operational friction in your current business workflow."); }, 100);
-            } else { body.innerHTML = `<h2 style="color:var(--primary)">${type} Node</h2><p style="opacity:0.6;">Establishing secure link...</p>`; }
+                setTimeout(() => { 
+                    ui.initMatrix(); 
+                    ui.addAuditMsg("bot", "System online. I am your AI Auditor. Please describe the primary operational friction in your current business workflow."); 
+                }, 100);
+            } else { body.innerHTML = `<h2 style="color:var(--primary)">${type} Node</h2><p style="opacity:0.6;">Establishing secure link to architect databases...</p>`; }
         },
 
         addAuditMsg: (role, text) => {
@@ -135,17 +137,33 @@
                     body: JSON.stringify({ message: val, history: ui.auditHistory })
                 });
                 const data = await res.json();
-                ui.addAuditMsg("bot", data.analysis || "Data received. Processing architectural alignment...");
+                ui.addAuditMsg("bot", data.analysis || "Data acknowledged. Scaling diagnostic parameters...");
             } catch (e) { ui.addAuditMsg("bot", "Uplink unstable. Proceeding with local diagnostic parameters."); }
         },
 
         generateFinalAudit: () => {
             const win = document.getElementById('audit-chat-window');
-            win.innerHTML = `<div style="color:var(--primary); font-family:monospace; background:rgba(0,204,163,0.05); padding:20px; border-radius:8px; border:1px solid var(--primary);">
-                <h3>[ ARCHITECTURAL_AUDIT_REPORT ]</h3>
-                <p style="font-size:0.8rem; line-height:1.6;">Your infrastructure requires an <b>Agentic Pipeline</b> to resolve manual latency. I recommend a 3-stage deployment focusing on inventory synchronization and automated social reach.</p>
-                <p style="font-size:0.6rem; color:#666; margin-top:15px;">REF_ID: ${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
-            </div>`;
+            const botMsgCount = ui.auditHistory.filter(m => m.role === 'bot').length;
+
+            if (botMsgCount < 4) {
+                ui.addAuditMsg("bot", "Diagnostic incomplete. I require more data points for a high-fidelity report. Please continue the interaction.");
+                return;
+            }
+
+            win.innerHTML = `
+                <div style="color:var(--primary); font-family:monospace; background:rgba(0,204,163,0.05); padding:20px; border-radius:12px; border:1px solid var(--primary); animation: fadeIn 0.8s ease;">
+                    <h3 style="margin-top:0; border-bottom:1px solid rgba(0,204,163,0.2); padding-bottom:10px;">[ ARCHITECTURAL_AUDIT_REPORT ]</h3>
+                    <p style="font-size:0.75rem; margin-bottom:15px;"><b>TARGET:</b> DYNAMIC_CLIENT_WORKFLOW</p>
+                    <div style="font-size:0.8rem; line-height:1.6;">
+                        <p><b>PROJECTION:</b> Based on the ${botMsgCount} data points provided, your current manual bottleneck is causing significant operational leakage.</p>
+                        <p><b>STRATEGY:</b> I recommend a <b>Custom Agentic Pipeline</b>. This deployment will bypass legacy friction by implementing a direct API bridge, targeting a 65% reduction in manual data handling.</p>
+                        <p><b>NEXT STEP:</b> Proceed to structural mapping of the data schema for immediate synchronization.</p>
+                    </div>
+                    <div style="margin-top:20px; padding-top:10px; border-top:1px solid rgba(0,204,163,0.1); font-size:0.6rem; color:#666; display:flex; justify-content:space-between;">
+                        <span>STATUS: VERIFIED_OPTIMAL</span>
+                        <span>REF: ${Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                    </div>
+                </div>`;
             document.getElementById('audit-input-area').style.display = 'none';
         },
 
@@ -157,11 +175,11 @@
                     const text = document.getElementById('status-text');
                     if(dot && text) {
                         dot.style.background = 'var(--primary)';
-                        dot.style.boxShadow = '0 0 8px var(--primary)';
+                        dot.style.boxShadow = '0 0 10px var(--primary)';
                         text.innerText = 'UPLINK_ONLINE';
                     }
                 }
-            } catch (e) { console.log("Waiting for backend uplink..."); }
+            } catch (e) { console.log("Engine offline or spinning up..."); }
         },
 
         initMatrix: () => {
@@ -193,7 +211,6 @@
     };
 
     VanillaTilt.init(document.querySelectorAll(".card"), { max: 5, speed: 400, glare: true, "max-glare": 0.1 });
-    // Run initial uplink check
     ui.checkUplink();
 </script>
 </body>
