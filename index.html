@@ -105,9 +105,9 @@
             </div>
 
             <div class="card" data-tilt onclick="ui.open('Vault')">
-                <span class="tag">03_MEDIA</span>
+                <span class="tag">03_VAULT</span>
                 <h3 style="margin: 10px 0 5px 0;">Visual Vault</h3>
-                <p style="font-size: 0.8rem; opacity: 0.7;">Film Noir & Underwater Videography</p>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Hobby Grading & Tracking</p>
             </div>
 
             <div class="card" data-tilt onclick="ui.open('Terminal')">
@@ -158,12 +158,25 @@
                     <p style="font-size:0.9rem; opacity:0.8; margin-bottom: 15px;">Timeline: Oct 2025 - Jan 2026</p>
                     <p>Focused on organic social growth, creative backend optimization, and bridging data insights with narrative impact for a St. Louis venue.</p>`,
                 'Vault': `
-                    <h2 style="color:var(--primary)">Visual Vault</h2>
-                    <p>Underwater Videography & Film Noir Archive.</p>
-                    <div style="border: 1px dashed var(--primary); padding: 40px; margin-top: 20px; text-align: center; opacity: 0.5;">
-                        [ VIDEO_STREAM_ENCRYPTED ]<br>
-                        <span style="font-size:0.7rem;">(Awaiting Gallery Integration)</span>
-                    </div>`,
+                    <h2 style="color:var(--primary)">Visual Vault: Grading Engine</h2>
+                    <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px;">
+                        AI-Powered Hobby Inventory & Condition Tracking.
+                    </p>
+                    <div style="background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                        <p style="font-family: monospace; font-size: 0.75rem; color: var(--primary);">[ SYSTEM_READY ]: Awaiting Visual Input...</p>
+                        <div style="height: 120px; border: 2px dashed #444; margin: 15px 0; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.8rem;">
+                            DRAG_IMAGE_OR_ACTIVATE_CAMERA
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div style="font-size: 0.7rem; border-top: 1px solid #222; padding-top: 5px;">
+                                <span style="display:block; color:#555;">Centering</span> --
+                            </div>
+                            <div style="font-size: 0.7rem; border-top: 1px solid #222; padding-top: 5px;">
+                                <span style="display:block; color:#555;">Surface</span> --
+                            </div>
+                        </div>
+                    </div>
+                    <button style="width:100%; padding:15px; background:var(--primary); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">INITIALIZE_SCAN</button>`,
                 'Terminal': `
                     <h2 style="color:var(--primary)">System Terminal</h2>
                     <div style="font-family: monospace; font-size: 0.85rem; color: #aaa;">
