@@ -68,7 +68,6 @@
         }
         input[type="text"]:focus { border-color: var(--primary); }
 
-        /* Hacker Persona Styles */
         .cursor { animation: blink 1s infinite; color: var(--primary); font-weight: bold; }
         @keyframes blink { 50% { opacity: 0; } }
 
@@ -84,7 +83,7 @@
                 <h1>Jonathan D. Taylor</h1>
                 <p style="opacity: 0.7;">AI Systems Architect & Agentic Workflow Designer</p>
             </div>
-            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>AI Audit</h3><p style="font-size:0.75rem; opacity:0.5;">System Breach Analysis</p></div>
+            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>AI Audit</h3><p style="font-size:0.75rem; opacity:0.5;">Operational Diagnostics</p></div>
             <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.75rem; opacity:0.5;">Adventures of Intrigue</p></div>
             <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.75rem; opacity:0.5;">Multimodal Node</p></div>
             <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.75rem; opacity:0.5;">System Events</p></div>
@@ -111,16 +110,16 @@
                     <div style="position:relative; min-height:300px; overflow:hidden; background:#000; border-radius:12px; padding:25px; border:1px solid rgba(0,204,163,0.3);">
                         <canvas id="matrix-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.12; z-index:1; pointer-events:none;"></canvas>
                         <div style="position:relative; z-index:2; font-family:monospace;">
-                            <p style="color:var(--primary); font-size:0.6rem; margin:0; letter-spacing:1px;">[ UPLINK_ESTABLISHED ]: SESSION_042</p>
-                            <p style="color:var(--primary); font-size:0.6rem; margin:0; letter-spacing:1px; margin-bottom:20px;">[ TARGET_INFRASTRUCTURE ]: STABILIZED</p>
-                            <div style="color:#fff; font-size:0.85rem; line-height:1.6; border-left: 2px solid var(--primary); padding-left:15px; min-height:120px;">
-                                <span id="hacker-text"></span><span class="cursor">_</span>
+                            <p style="color:var(--primary); font-size:0.6rem; margin:0; letter-spacing:1px;">[ SYSTEM_DIAGNOSTIC_INITIATED ]</p>
+                            <p style="color:var(--primary); font-size:0.6rem; margin:0; letter-spacing:1px; margin-bottom:20px;">[ ARCHITECT_ID ]: J.TAYLOR_042</p>
+                            <div style="color:#d1d1d1; font-size:0.85rem; line-height:1.7; border-left: 2px solid var(--primary); padding-left:15px; min-height:120px; font-family: 'Segoe UI', sans-serif;">
+                                <span id="hacker-text" style="white-space: pre-wrap;"></span><span class="cursor">|</span>
                             </div>
                         </div>
                     </div>`;
                 setTimeout(() => {
                     ui.initMatrix();
-                    ui.typeEffect("hacker-text", "Listen closely. Your manual inventory is a leak. Your social reach is a ghost. I’ve bypassed your bottlenecks and mapped a 3-stage agentic overhaul. You aren't losing to the market; you're losing to your own stack. Ready to recode the game?");
+                    ui.typeEffect("hacker-text", "Operational Analysis Complete.\n\nYour current infrastructure exhibits significant friction in manual data handling and inventory synchronization. I have identified a 3-stage agentic workflow designed to automate high-latency tasks and recover lost operational hours. By deploying custom AI orchestration, we can transform these bottlenecks into scalable growth pipelines.\n\nShall we begin the optimization?");
                 }, 100);
 
             } else if (type === 'Vault') {
@@ -173,7 +172,6 @@
             const fontSize = 11;
             const columns = canvas.width / fontSize;
             const drops = Array(Math.floor(columns)).fill(1);
-
             const draw = () => {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -197,7 +195,7 @@
                     el.innerHTML += text.charAt(i);
                     i++;
                 } else clearInterval(timer);
-            }, 35);
+            }, 30);
         },
 
         switchInTab: (id) => {
