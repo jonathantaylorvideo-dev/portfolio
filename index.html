@@ -10,352 +10,153 @@
     <style>
         :root { 
             --primary: #00ffcc; 
-            --bg: #010101; 
-            --card: rgba(8, 12, 12, 0.7); 
+            --card: rgba(10, 20, 20, 0.75); 
             --text: #ffffff; 
         }
         
         body, html { 
             margin: 0; padding: 0; height: 100%; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); color: var(--text);
-            overflow: hidden; /* Essential for Parallax overflow */
+            background-color: #000; /* Base fallback */
+            color: var(--text); font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; 
         }
 
-        /* --- 🌃 PARALLAX BACKGROUND (PNG) --- */
-        .parallax-bg {
+        /* --- 🌃 THE PARALLAX BACKGROUND --- */
+        #parallax-bg {
             position: fixed;
-            top: -5%; left: -5%; 
-            width: 110%; height: 110%;
-            z-index: -3;
-            /* 🚨 UPDATED TO PNG */
-            background: url('assets/city.png') no-repeat center center;
+            top: -10%; left: -10%;
+            width: 120%; height: 120%;
+            /* 🚨 ABSOLUTE PATH CHECK */
+            background: url('./assets/city.png') no-repeat center center;
             background-size: cover;
-            transition: transform 0.1s ease-out;
+            z-index: -3;
             will-change: transform;
+            transition: transform 0.1s ease-out;
         }
 
-        /* --- 🎥 VIDEO BLEND LAYER --- */
-        .video-overlay {
+        /* --- 🎥 VIDEO OVERLAY --- */
+        .video-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2; pointer-events: none;
-        }
-        .video-overlay video {
-            min-width: 100%; min-height: 100%;
-            object-fit: cover; opacity: 0.35; 
             mix-blend-mode: screen; 
-            filter: grayscale(100%) brightness(0.7);
+            opacity: 0.3;
         }
+        video { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); }
 
-        /* --- 📺 THE GLASS SCANLINES --- */
-        .video-overlay::after {
-            content: "";
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        /* --- 📺 SCANLINES --- */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
             background-size: 100% 4px;
-            z-index: 1; 
+            z-index: -1; pointer-events: none;
         }
 
-        /* --- 🍱 UI BENTO GRID --- */
+        /* --- 🍱 UI GRID --- */
         .wrapper { 
             position: relative; z-index: 10; 
             height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 40px; box-sizing: border-box; 
+            padding: 20px;
         }
         
         .bento-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
-            gap: 25px; 
-            max-width: 1200px; width: 100%;
+            gap: 20px; 
+            max-width: 1100px; width: 100%;
         }
 
         .card { 
             background: var(--card); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 255, 204, 0.15);
-            border-radius: 28px; padding: 40px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 24px; padding: 30px;
             transform-style: preserve-3d;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
         }
 
-        .card:hover { 
-            border-color: var(--primary); 
-            z-index: 50; 
-            box-shadow: 0 40px 100px rgba(0, 255, 204, 0.15);
+        .card:hover { border-color: var(--primary); z-index: 100; }
+
+        .hero { grid-column: span 3; cursor: pointer; }
+        .hero h1 { 
+            font-size: 3.5rem; margin: 0; color: var(--primary); 
+            transform: translateZ(60px); 
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
         }
 
-        .hero-card { grid-column: span 3; cursor: pointer; }
-        .hero-card h1 { 
-            font-size: 3.8rem; margin: 0; color: var(--primary); 
-            text-transform: uppercase; letter-spacing: -2px;
-            transform: translateZ(80px);
-            text-shadow: 0 0 30px rgba(0, 255, 204, 0.4);
-        }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; background: #333; margin-right: 10px; }
+        .online { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
-        .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; background: #333; margin-right: 12px; }
-        .online-dot { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
+        button { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* MODALS */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); backdrop-filter: blur(30px); justify-content: center; align-items: center; }
-        .modal-content { background: #050505; width: 90%; max-width: 650px; padding: 60px; border-radius: 40px; border: 1px solid #222; position: relative; }
-        .close-btn { position: absolute; top: 25px; right: 35px; font-size: 35px; color: #444; cursor: pointer; }
-
-        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero-card { grid-column: span 1; } }
+        @media (max-width: 850px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
-    <div class="parallax-bg" id="parallaxBg"></div>
+    <div id="parallax-bg"></div>
 
-    <div class="video-overlay">
+    <div class="video-layer">
         <video id="bgVideo" autoplay muted loop playsinline>
-            <source src="assets/hero-loop.webm" type="video/webm">
+            <source src="./assets/hero-loop.webm" type="video/webm">
         </video>
     </div>
+
+    <div class="scanlines"></div>
 
     <div class="wrapper">
         <div class="bento-grid">
             
-            <div class="card hero-card" onclick="openModal('about-modal')">
+            <div class="card hero" data-tilt>
                 <h1>Jonathan D. Taylor</h1>
-                <p style="font-size: 1.2rem; opacity: 0.8; transform: translateZ(40px);">AI Systems Architect & Agentic Workflow Designer</p>
-                <small style="color: var(--primary); letter-spacing: 2px; transform: translateZ(20px);">[ VIEW_ARCHIVE ]</small>
+                <p style="transform: translateZ(30px); opacity: 0.8;">AI Systems Architect</p>
             </div>
 
-            <div class="card">
-                <h3 style="margin-top:0;">Node Status</h3>
-                <div style="display: flex; align-items: center;">
-                    <span id="status-dot" class="status-dot"></span>
-                    <span id="status-text" style="font-family: monospace; font-size: 0.85rem;">INITIALIZING...</span>
-                </div>
+            <div class="card" data-tilt>
+                <h3>Node Status</h3>
+                <span class="status-dot online"></span>
+                <span style="font-family: monospace; font-size: 0.8rem;">SYSTEM_READY</span>
             </div>
 
-            <div class="card" style="grid-column: span 2;">
+            <div class="card" data-tilt style="grid-column: span 2;">
                 <h3>Strategy Audit</h3>
-                <p style="font-size: 0.9rem; opacity: 0.7;">Automating complex data backends into creative workflows.</p>
-                <button style="width:100%; padding:14px; background:var(--primary); color:black; border:none; border-radius:10px; font-weight:800; cursor:pointer; margin-top:10px;">LAUNCH ENGINE</button>
+                <p style="font-size: 0.85rem; opacity: 0.7;">Click to initialize AI workflow audit.</p>
+                <button>RUN ENGINE</button>
             </div>
 
-            <div class="card">
-                <h3>Audio Lab</h3>
-                <p style="font-size: 0.9rem;">Uke Gothic / Prog-Folk Noir</p>
+            <div class="card" data-tilt>
+                <h3>Creative Lab</h3>
+                <p style="font-size: 0.85rem;">Prog-Folk Noir</p>
             </div>
 
-        </div>
-    </div>
-
-    <div id="about-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('about-modal')">&times;</span>
-            <h2 style="color: var(--primary)">Architect Profile</h2>
-            <p>Jonathan D. Taylor specializes in bridging the gap between raw data and high-end cinematic outputs using AI agentic workflows.</p>
         </div>
     </div>
 
 <script>
-    // 🕹️ MARVEL SNAP CARD PHYSICS
-    VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 8, speed: 1200, glare: true, "max-glare": 0.4, perspective: 2000, scale: 1.03
-    });
+    // 🕹️ REINFORCED TILT INITIALIZATION
+    function initTilt() {
+        VanillaTilt.init(document.querySelectorAll(".card"), {
+            max: 15, // Increased tilt
+            speed: 800,
+            glare: true,
+            "max-glare": 0.5,
+            perspective: 800, // Lower perspective makes tilt MORE aggressive
+            scale: 1.05
+        });
+    }
 
-    // 🌌 MOUSE PARALLAX (Subtle opposite movement)
-    const bg = document.getElementById('parallaxBg');
+    // 🌌 REINFORCED PARALLAX
+    const bg = document.getElementById('parallax-bg');
     document.addEventListener('mousemove', (e) => {
-        const moveX = (window.innerWidth / 2 - e.pageX) / 45;
-        const moveY = (window.innerHeight / 2 - e.pageY) / 45;
-        bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        const x = (window.innerWidth / 2 - e.pageX) / 25;
+        const y = (window.innerHeight / 2 - e.pageY) / 25;
+        bg.style.transform = `translate(${x}px, ${y}px)`;
     });
 
-    // 🎥 VIDEO AUTOPLAY
+    // 🎥 REINFORCED VIDEO
     const v = document.getElementById('bgVideo');
-    window.addEventListener('load', () => v.play().catch(() => {}));
-    document.body.addEventListener('click', () => v.play(), {once:true});
-
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan D. Taylor | AI Architect</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
-    
-    <style>
-        :root { 
-            --primary: #00ffcc; 
-            --bg: #010101; 
-            --card: rgba(8, 12, 12, 0.7); 
-            --text: #ffffff; 
-        }
-        
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); color: var(--text);
-            overflow: hidden; /* Essential for Parallax overflow */
-        }
-
-        /* --- 🌃 PARALLAX BACKGROUND (PNG) --- */
-        .parallax-bg {
-            position: fixed;
-            top: -5%; left: -5%; 
-            width: 110%; height: 110%;
-            z-index: -3;
-            /* 🚨 UPDATED TO PNG */
-            background: url('assets/city.png') no-repeat center center;
-            background-size: cover;
-            transition: transform 0.1s ease-out;
-            will-change: transform;
-        }
-
-        /* --- 🎥 VIDEO BLEND LAYER --- */
-        .video-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -2; pointer-events: none;
-        }
-        .video-overlay video {
-            min-width: 100%; min-height: 100%;
-            object-fit: cover; opacity: 0.35; 
-            mix-blend-mode: screen; 
-            filter: grayscale(100%) brightness(0.7);
-        }
-
-        /* --- 📺 THE GLASS SCANLINES --- */
-        .video-overlay::after {
-            content: "";
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-            background-size: 100% 4px;
-            z-index: 1; 
-        }
-
-        /* --- 🍱 UI BENTO GRID --- */
-        .wrapper { 
-            position: relative; z-index: 10; 
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 40px; box-sizing: border-box; 
-        }
-        
-        .bento-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 25px; 
-            max-width: 1200px; width: 100%;
-        }
-
-        .card { 
-            background: var(--card); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 255, 204, 0.15);
-            border-radius: 28px; padding: 40px;
-            transform-style: preserve-3d;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover { 
-            border-color: var(--primary); 
-            z-index: 50; 
-            box-shadow: 0 40px 100px rgba(0, 255, 204, 0.15);
-        }
-
-        .hero-card { grid-column: span 3; cursor: pointer; }
-        .hero-card h1 { 
-            font-size: 3.8rem; margin: 0; color: var(--primary); 
-            text-transform: uppercase; letter-spacing: -2px;
-            transform: translateZ(80px);
-            text-shadow: 0 0 30px rgba(0, 255, 204, 0.4);
-        }
-
-        .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; background: #333; margin-right: 12px; }
-        .online-dot { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
-
-        /* MODALS */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); backdrop-filter: blur(30px); justify-content: center; align-items: center; }
-        .modal-content { background: #050505; width: 90%; max-width: 650px; padding: 60px; border-radius: 40px; border: 1px solid #222; position: relative; }
-        .close-btn { position: absolute; top: 25px; right: 35px; font-size: 35px; color: #444; cursor: pointer; }
-
-        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero-card { grid-column: span 1; } }
-    </style>
-</head>
-<body>
-
-    <div class="parallax-bg" id="parallaxBg"></div>
-
-    <div class="video-overlay">
-        <video id="bgVideo" autoplay muted loop playsinline>
-            <source src="assets/hero-loop.webm" type="video/webm">
-        </video>
-    </div>
-
-    <div class="wrapper">
-        <div class="bento-grid">
-            
-            <div class="card hero-card" onclick="openModal('about-modal')">
-                <h1>Jonathan D. Taylor</h1>
-                <p style="font-size: 1.2rem; opacity: 0.8; transform: translateZ(40px);">AI Systems Architect & Agentic Workflow Designer</p>
-                <small style="color: var(--primary); letter-spacing: 2px; transform: translateZ(20px);">[ VIEW_ARCHIVE ]</small>
-            </div>
-
-            <div class="card">
-                <h3 style="margin-top:0;">Node Status</h3>
-                <div style="display: flex; align-items: center;">
-                    <span id="status-dot" class="status-dot"></span>
-                    <span id="status-text" style="font-family: monospace; font-size: 0.85rem;">INITIALIZING...</span>
-                </div>
-            </div>
-
-            <div class="card" style="grid-column: span 2;">
-                <h3>Strategy Audit</h3>
-                <p style="font-size: 0.9rem; opacity: 0.7;">Automating complex data backends into creative workflows.</p>
-                <button style="width:100%; padding:14px; background:var(--primary); color:black; border:none; border-radius:10px; font-weight:800; cursor:pointer; margin-top:10px;">LAUNCH ENGINE</button>
-            </div>
-
-            <div class="card">
-                <h3>Audio Lab</h3>
-                <p style="font-size: 0.9rem;">Uke Gothic / Prog-Folk Noir</p>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="about-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('about-modal')">&times;</span>
-            <h2 style="color: var(--primary)">Architect Profile</h2>
-            <p>Jonathan D. Taylor specializes in bridging the gap between raw data and high-end cinematic outputs using AI agentic workflows.</p>
-        </div>
-    </div>
-
-<script>
-    // 🕹️ MARVEL SNAP CARD PHYSICS
-    VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 8, speed: 1200, glare: true, "max-glare": 0.4, perspective: 2000, scale: 1.03
-    });
-
-    // 🌌 MOUSE PARALLAX (Subtle opposite movement)
-    const bg = document.getElementById('parallaxBg');
-    document.addEventListener('mousemove', (e) => {
-        const moveX = (window.innerWidth / 2 - e.pageX) / 45;
-        const moveY = (window.innerHeight / 2 - e.pageY) / 45;
-        bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
-    });
-
-    // 🎥 VIDEO AUTOPLAY
-    const v = document.getElementById('bgVideo');
-    window.addEventListener('load', () => v.play().catch(() => {}));
-    document.body.addEventListener('click', () => v.play(), {once:true});
-
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    const playV = () => { if(v) v.play().catch(()=>{}); };
+    window.addEventListener('load', () => { initTilt(); playV(); });
+    document.body.addEventListener('click', playV, {once:true});
 </script>
 </body>
 </html>
