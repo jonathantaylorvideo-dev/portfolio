@@ -131,19 +131,34 @@
             } catch (err) { alert("Camera Access Error: " + err.message); }
         },
 
-        // CRITICAL FIX: Downscaling image to stay under Vercel payload limits
+ // THE WOLVERINE FIX: Sourced from the "Architect" logic
         captureAndScan: () => {
             const video = document.getElementById('vault-preview');
+            const container = document.getElementById('video-container');
+            
+            // Visual feedback "Shutter"
+            if (container) container.classList.add('scan-anim');
+            
             const canvas = document.createElement('canvas');
+            
+            // 1024px is the "Sweet Spot" for Gemini 1.5 Pro to see card condition
             const maxDim = 1024;
             const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight));
             
             canvas.width = video.videoWidth * scale;
             canvas.height = video.videoHeight * scale;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // 0.7 Quality maintains the holographic "foil" details for the AI
             const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
-            video.srcObject.getTracks().forEach(track => track.stop());
+            
+            // Stop the hardware to save mobile battery during the API wait
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            
             ui.runRealScan(null, base64);
         },
 
@@ -151,16 +166,20 @@
             const results = document.getElementById('vault-results');
             const statusText = document.getElementById('scan-status');
             const dataBox = document.getElementById('vault-data-display');
-            results.style.display = 'block';
-            statusText.innerText = "[ COMPRESSING_&_TRANSMITTING ]...";
+            
+            if (results) results.style.display = 'block';
+            if (statusText) statusText.innerText = "[ PROCESSING_PAYLOAD ]...";
 
             try {
                 let base64 = directBase64;
+                
+                // Handle the "Upload" path with the same compression logic
                 if (file) {
                     const bitmap = await createImageBitmap(file);
                     const canvas = document.createElement('canvas');
                     const scale = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height));
-                    canvas.width = bitmap.width * scale; canvas.height = bitmap.height * scale;
+                    canvas.width = bitmap.width * scale; 
+                    canvas.height = bitmap.height * scale;
                     canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
                     base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
                 }
@@ -171,28 +190,36 @@
                     body: JSON.stringify({ image: base64 })
                 });
 
-                if (!response.ok) throw new Error(`HTTP_${response.status}`);
+                if (!response.ok) throw new Error(`HANDSHAKE_FAILED_${response.status}`);
                 const data = await response.json();
 
-                statusText.innerText = `[ ANALYSIS_COMPLETE ]: ${data.name || 'Identified'}`;
-                dataBox.innerHTML = `
-                    <div style="font-size:0.7rem; color:#888;">GRADE: <span style="color:#fff;">${data.grade || '--'}</span></div>
-                    <div style="font-size:0.7rem; color:#888;">VALUE: <span style="color:#fff;">${data.value || '--'}</span></div>
-                    <div style="grid-column: span 2; font-size:0.65rem; color:var(--primary); margin-top:5px;">${data.lore || ''}</div>`;
-            } catch (err) { statusText.innerText = `[ SCAN_FAILED ]: ${err.message}`; }
+                if (statusText) {
+                    statusText.innerText = `[ DATA_SYNCED ]: ${data.name || 'UNIDENTIFIED'}`;
+                    statusText.style.color = "var(--primary)";
+                }
+                
+                if (dataBox) {
+                    dataBox.innerHTML = `
+                        <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+                            <span style="font-size:0.6rem; color:#666; display:block; font-family:monospace;">EST_GRADE</span>
+                            <span style="color:var(--primary); font-weight:bold; font-size:0.9rem;">${data.grade || '--'}</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+                            <span style="font-size:0.6rem; color:#666; display:block; font-family:monospace;">MARKET_VAL</span>
+                            <span style="color:var(--neon-pink); font-weight:bold; font-size:0.9rem;">${data.value || '--'}</span>
+                        </div>
+                        <div style="grid-column: span 2; background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border-left:2px solid var(--primary);">
+                            <span style="font-size:0.6rem; color:#666; display:block; font-family:monospace; margin-bottom:4px;">ITEM_LORE</span>
+                            <span style="font-size:0.7rem; color:#ccc; line-height:1.4;">${data.lore || 'No data recorded.'}</span>
+                        </div>`;
+                }
+            } catch (err) { 
+                if (statusText) {
+                    statusText.innerText = `[ ERROR ]: ${err.message}`; 
+                    statusText.style.color = "var(--neon-pink)";
+                }
+            }
         },
-
-        toBase64: file => new Promise((resolve, reject) => { 
-            const reader = new FileReader(); reader.readAsDataURL(file); 
-            reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e); 
-        }),
-
-        close: () => { 
-            const video = document.getElementById('vault-preview');
-            if(video && video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-            document.getElementById('modal-overlay').style.display = 'none'; 
-        }
-    };
 
     // Parallax logic
     document.addEventListener('mousemove', (e) => { 
