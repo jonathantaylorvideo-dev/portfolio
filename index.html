@@ -9,7 +9,6 @@
         :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
         body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; background: #000 url('assets/city.png') no-repeat center center fixed; background-size: 110%; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         
-        /* 🚨 FIX: Ensure the interactive layer is reachable */
         .overlay { 
             position: relative; height: 100vh; width: 100vw; 
             display: flex; align-items: center; justify-content: center; 
@@ -24,7 +23,7 @@
             border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 22px; 
             padding: 30px; transform-style: preserve-3d; cursor: pointer; 
             position: relative; overflow: hidden; transition: border-color 0.3s ease; 
-            pointer-events: auto; /* Force clickability */
+            pointer-events: auto;
         }
         
         .card:hover { border-color: var(--primary); }
@@ -110,7 +109,7 @@
                         <div id="vault-data-display" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;"></div>
                     </div>`;
             } else if (type === 'About') {
-                body.innerHTML = `<h2 style="color:var(--primary)">Jonathan D. Taylor</h2><p style="font-style: italic; color: var(--primary); font-size: 0.9rem;">AI Systems Architect | Solo Operator</p><p>I’ve always enjoyed a puzzle. Merging cold analytics with the human soul of a story is where I find the most impact.</p><p>I build for the <strong>agile small business</strong>—iterating faster and for less than an agency, with the care of a solo craftsman.</p><p style="font-family: monospace; font-size: 0.8rem; background: rgba(0,255,204,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary);">> MISSION_LOG: "Aspiring circumnavigator. Balancing nature and the digital."</p>`;
+                body.innerHTML = `<h2 style="color:var(--primary)">Jonathan D. Taylor</h2><p style="font-style: italic; color: var(--primary); font-size: 0.9rem;">AI Systems Architect | Solo Operator</p><p>I build for the <strong>agile small business</strong>—iterating faster and for less than an agency, with the care of a solo craftsman.</p><p style="font-family: monospace; font-size: 0.8rem; background: rgba(0,255,204,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary);">> MISSION_LOG: "Aspiring circumnavigator. Balancing nature and the digital."</p>`;
             } else { body.innerHTML = `<h2>Node: ${type}</h2><p>Data stream active.</p>`; }
         },
         switchInTab: (tabId) => {
@@ -126,7 +125,7 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode }, audio: false });
                 video.srcObject = stream;
                 snapBtn.style.display = 'block';
-            } catch (err) { alert("Camera Access Denied"); }
+            } catch (err) { alert("Camera Access Denied: " + err.message); }
         },
         captureAndScan: () => {
             const video = document.getElementById('vault-preview');
@@ -160,10 +159,16 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ image: base64, text: document.getElementById('vault-text')?.value })
                 });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
                 const data = await response.json();
                 statusText.innerText = `[ ANALYSIS_COMPLETE ]: ${data.name || 'Item Identified'}`;
                 dataBox.innerHTML = `<div style="font-size:0.7rem; color:#888;">EST_GRADE: <span style="color:#fff;">${data.grade || '--'}</span></div><div style="font-size:0.7rem; color:#888;">MARKET_VAL: <span style="color:#fff;">${data.value || '--'}</span></div><div style="grid-column: span 2; font-size:0.65rem; color:var(--primary); margin-top:5px; opacity:0.8;">${data.lore || ''}</div>`;
-            } catch (err) { statusText.innerText = "[ CONNECTION_ERROR ]"; }
+            } catch (err) { 
+                statusText.innerText = `[ CONNECTION_ERROR ]: ${err.message}`; 
+                console.error("Scan Error:", err);
+            }
         },
         toBase64: file => new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error); }),
         close: () => { 
@@ -173,14 +178,12 @@
         }
     };
 
-    // Parallax logic
     document.addEventListener('mousemove', (e) => { 
         const x = (window.innerWidth / 2 - e.pageX) / 50; 
         const y = (window.innerHeight / 2 - e.pageY) / 50; 
         document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`; 
     });
 
-    // Initialize Tilt
     VanillaTilt.init(document.querySelectorAll(".card"), { max: 8, speed: 1000, glare: true, "max-glare": 0.2 });
 </script>
 </body>
