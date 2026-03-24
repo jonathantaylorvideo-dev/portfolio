@@ -8,115 +8,79 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     
     <style>
-        :root { 
-            --primary: #00ffcc; 
-            --card-bg: rgba(5, 12, 12, 0.85); 
-        }
+        :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
         
         body, html { 
             margin: 0; padding: 0; height: 100vh; width: 100vw;
-            background-color: #000; color: #fff;
-            font-family: 'Segoe UI', sans-serif; overflow: hidden; 
-        }
-
-        /* --- 🌌 PARALLAX CITY LAYER --- */
-        #parallax-bg {
-            position: fixed;
-            top: -10%; left: -10%;
-            width: 120%; height: 120%;
-            /* 🚨 PATH IS NOW IN THE HTML BODY BELOW FOR STABILITY */
+            background-color: #000;
+            /* 🏙️ DIRECT PATH - NO LAYERS */
+            background-image: url('assets/city.png');
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
-            z-index: -5;
-            will-change: transform;
+            background-attachment: fixed;
+            color: #fff; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; 
         }
 
-        /* --- 💡 LIGHTING EFFECTS --- */
-        .lighting-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.8) 100%);
-            z-index: -4; pointer-events: none;
-        }
-
-        /* --- 🍱 INTERFACE --- */
         .wrapper { 
-            position: relative; z-index: 10; height: 100vh; 
+            height: 100vh; width: 100vw;
             display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.6); /* This ensures the text is readable */
         }
         
         .bento-grid { 
-            display: grid; grid-template-columns: repeat(4, 1fr); 
-            gap: 25px; width: 90%; max-width: 1100px;
+            display: grid; grid-template-columns: repeat(2, 1fr); 
+            gap: 25px; width: 90%; max-width: 800px;
         }
 
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 255, 204, 0.2);
-            border-radius: 28px; padding: 40px;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 20px; padding: 35px;
             transform-style: preserve-3d;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         }
 
-        .hero { grid-column: span 3; }
-        .hero h1 { 
-            font-size: 3.5rem; margin: 0; color: var(--primary); 
-            transform: translateZ(60px);
-            text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
-        }
+        .hero { grid-column: span 2; }
+        h1 { font-size: 3rem; margin: 0; color: var(--primary); }
+        .tag { font-family: monospace; color: var(--primary); font-size: 0.8rem; }
 
-        .tag { font-family: monospace; color: var(--primary); font-size: 0.8rem; letter-spacing: 2px; }
-
-        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
+        @media (max-width: 600px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
     </style>
 </head>
 <body>
-
-    <div id="parallax-bg" style="background-image: url('assets/city.png');"></div>
-    
-    <div class="lighting-overlay"></div>
 
     <div class="wrapper">
         <div class="bento-grid">
             
             <div class="card hero" data-tilt>
-                <span class="tag">[ IDENTITY_CONFIRMED ]</span>
+                <span class="tag">[ IDENTITY_LOCKED ]</span>
                 <h1 style="margin-top: 10px;">Jonathan D. Taylor</h1>
-                <p style="opacity: 0.8;">AI Systems Architect & Agentic Workflow Designer</p>
+                <p style="opacity: 0.8; font-size: 1.1rem;">AI Systems Architect & Workflow Designer</p>
             </div>
 
             <div class="card" data-tilt>
-                <h3>System</h3>
-                <p class="tag">LIVE_NODE_01</p>
-            </div>
-
-            <div class="card" data-tilt style="grid-column: span 2;">
-                <h3>Strategy Audit</h3>
-                <button style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; cursor:pointer;">INITIALIZE</button>
+                <h3>System Status</h3>
+                <p class="tag">ACTIVE_NODE_01</p>
             </div>
 
             <div class="card" data-tilt>
-                <h3>Lab</h3>
-                <p style="font-size: 0.8rem; opacity: 0.6;">Prog-Folk Noir</p>
+                <h3>Creative Lab</h3>
+                <p style="font-size: 0.9rem; opacity: 0.8;">Prog-Folk Noir</p>
             </div>
 
         </div>
     </div>
 
 <script>
-    // Initialize 3D Tilt
-    VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 10, speed: 1000, glare: true, "max-glare": 0.3, scale: 1.05
-    });
-
-    // Parallax logic
-    const bg = document.getElementById('parallax-bg');
-    document.addEventListener('mousemove', (e) => {
-        const x = (window.innerWidth / 2 - e.pageX) / 40;
-        const y = (window.innerHeight / 2 - e.pageY) / 40;
-        bg.style.transform = `translate(${x}px, ${y}px)`;
-    });
+    // Only run if the library loaded correctly
+    if (window.VanillaTilt) {
+        VanillaTilt.init(document.querySelectorAll(".card"), {
+            max: 10, speed: 400, glare: true, "max-glare": 0.3
+        });
+    }
 </script>
 </body>
 </html>
