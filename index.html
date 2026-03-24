@@ -1,106 +1,217 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const axios = require('axios');
-
-dotenv.config();
-const app = express();
-
-// Standard Middleware for smooth Frontend-Backend communication
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-
-/**
- * 1. RENDER HEALTH CHECK
- * Confirms the engine is online and pings are reaching the target.
- */
-app.get('/', (req, res) => {
-    res.status(200).send('AI_STRATEGY_ENGINE: ONLINE [STATUS_CODE: 200]');
-});
-
-/**
- * 2. FRIENDLY PROFESSIONAL AI AUDITOR (5-6 STAGE DISCOVERY)
- * This logic cycles through a conversational interview before enabling the report.
- */
-app.post('/api/audit', async (req, res) => {
-    const { message, history } = req.body;
-    
-    // Count only the bot's questions to track diagnostic progress
-    const questionCount = history.filter(m => m.role === 'bot').length;
-
-    try {
-        let analysisText = "";
-
-        // Diagnostic Tree: Friendly Professional Voice
-        switch(questionCount) {
-            case 1:
-                analysisText = "That's a solid starting point. To help me understand the impact, roughly how many hours a week is your team currently spending on these manual tasks?";
-                break;
-            case 2:
-                analysisText = "Got it. Regarding your tech stack—are you currently using any specific software or APIs for these areas, or is most of this handled via spreadsheets and manual entry?";
-                break;
-            case 3:
-                analysisText = "That makes sense. If we were to design a custom solution, would you prioritize real-time data accuracy across all platforms, or simply reducing the time spent on repetitive entry?";
-                break;
-            case 4:
-                analysisText = "Almost there! In your current workflow, what is the biggest 'headache' or fail-point that currently causes the most friction?";
-                break;
-            case 5:
-                analysisText = "Final question for the diagnostic: What does a 'perfect' workday look like for you once these bottlenecks are automated? (e.g., total hands-off automation or a streamlined dashboard?)";
-                break;
-            default:
-                // This message unlocks the "Generate Full Audit" button functionality on the frontend
-                analysisText = "Thank you for those detailed insights. I've finished mapping your business architecture. You can now click [ GENERATE_FULL_AUDIT ] for your custom deployment strategy.";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jonathan D. Taylor | AI Architect</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <style>
+        :root { 
+            --primary: #00cca3; 
+            --snap-pink: #bc005e; 
+            --card-bg: rgba(7, 10, 10, 0.92); 
         }
+        
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; width: 100vw; 
+            background: #000 url('assets/city.png') no-repeat center center fixed; 
+            background-size: cover; color: #d1d1d1; font-family: 'Segoe UI', sans-serif; 
+            overflow-x: hidden; 
+        }
+        
+        .overlay { position: relative; min-height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.85) 100%); z-index: 10; }
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 20; }
+        
+        .card { 
+            background: var(--card-bg); backdrop-filter: blur(25px); 
+            border: 1px solid rgba(0, 204, 163, 0.1); border-radius: 22px; 
+            padding: 30px; transform-style: preserve-3d; cursor: pointer; 
+            position: relative; overflow: hidden; transition: all 0.4s ease; 
+        }
+        
+        .card:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(0, 204, 163, 0.15); }
+        .hero { grid-column: span 3; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
+        .hero h1 { font-size: 3.2rem; margin: 0; color: var(--primary); text-shadow: 0 0 15px rgba(0,204,163,0.3); }
+        .tag { font-family: monospace; color: var(--primary); font-size: 0.65rem; letter-spacing: 3px; opacity: 0.8; }
 
-        res.json({ status: "SUCCESS", analysis: analysisText });
-    } catch (err) {
-        console.error("[ERROR]: Audit Diagnostic Interrupted", err);
-        res.status(500).json({ error: "DIAGNOSTIC_FAILURE" });
-    }
-});
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); display: none; z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #050808; border: 1px solid rgba(0,204,163,0.2); padding: 35px; border-radius: 28px; width: 95%; max-width: 600px; position: relative; }
+        
+        .node-btn { padding: 10px 20px; background: transparent; border: 1px solid var(--primary); color: var(--primary); font-family: monospace; font-size: 0.6rem; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        .node-btn:hover { background: rgba(0,204,163,0.1); }
+        
+        input[type="text"] { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid #222; color: #fff; border-radius: 8px; font-family: monospace; font-size: 0.8rem; outline: none; box-sizing: border-box; }
 
-/**
- * 3. VISUAL VAULT ANALYZER
- * Keeps the multimodal node functional for future image analysis.
- */
-app.post('/api/analyze', async (req, res) => {
-    try {
-        res.json({
-            name: "SCAN_VERIFIED",
-            grade: "A [ARCHITECT_STAMP]",
-            value: "OPTIMAL_FLOW",
-            lore: "Infrastructure alignment confirmed. Visual data matches architectural standards."
-        });
-    } catch (err) {
-        res.status(500).json({ error: "OPTICAL_TIMEOUT" });
-    }
-});
+        #audit-chat-window { height: 250px; overflow-y: auto; margin-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; padding-right: 10px; }
+        .msg { margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; opacity: 0; animation: fadeIn 0.5s forwards; }
+        .msg.bot { color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; }
+        .msg.user { color: #fff; text-align: right; opacity: 0.7; font-family: monospace; }
+        @keyframes fadeIn { to { opacity: 1; } }
 
-/**
- * 4. SERVER BINDING (CRITICAL FOR RENDER)
- * Uses 0.0.0.0 and process.env.PORT to ensure the service is reachable.
- */
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`-----------------------------------------`);
-    console.log(`AI_STRATEGY_ENGINE: UPLINK ESTABLISHED`);
-    console.log(`BINDING_TO_PORT: ${PORT}`);
-    console.log(`-----------------------------------------`);
-});
+        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
+    </style>
+</head>
+<body>
 
-/**
- * 5. STAY_AWAKE PROTOCOL
- * Prevents Render's Free Tier from spinning down by pinging itself every 14 minutes.
- */
-const PING_INTERVAL = 14 * 60 * 1000; 
-const SELF_URL = 'https://ai-strategy-engine.onrender.com';
+    <div class="overlay">
+        <div class="bento-grid">
+            <div class="card hero" data-tilt onclick="ui.open('About')">
+                <div id="system-status" style="position:absolute; top:20px; right:25px; display:flex; align-items:center; gap:8px; font-family:monospace; font-size:0.5rem; opacity:0.6;">
+                    <span id="status-dot" style="width:6px; height:6px; background:#444; border-radius:50%;"></span>
+                    <span id="status-text">UPLINK_OFFLINE</span>
+                </div>
+                <span class="tag">[ ARCHITECT_VERIFIED ]</span>
+                <h1>Jonathan D. Taylor</h1>
+                <p style="opacity: 0.7;">AI Systems Architect & Agentic Workflow Designer</p>
+            </div>
+            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>AI Auditor</h3><p style="font-size:0.75rem; opacity:0.5;">Interactive Discovery</p></div>
+            <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.75rem; opacity:0.5;">Adventures of Intrigue</p></div>
+            <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.75rem; opacity:0.5;">Multimodal Node</p></div>
+            <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.75rem; opacity:0.5;">System Events</p></div>
+        </div>
+    </div>
 
-setInterval(async () => {
-    try {
-        await axios.get(SELF_URL);
-        console.log(`[SYSTEM_MAINTENANCE]: Self-ping successful. Engine active.`);
-    } catch (err) {
-        console.error("[SYSTEM_ERROR]: Self-ping failed. Check logs.");
-    }
-}, PING_INTERVAL);
+    <div id="modal-overlay" onclick="ui.close()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-body"></div>
+            <div style="text-align:center; margin-top:30px; cursor:pointer; color:var(--primary); font-family:monospace; font-size:0.65rem; opacity:0.5;" onclick="ui.close()">[ TERMINATE_SESSION ]</div>
+        </div>
+    </div>
+
+<script>
+    const API_BASE = "https://ai-strategy-engine.onrender.com";
+
+    const ui = {
+        matrixInterval: null,
+        auditHistory: [],
+
+        open: (type) => {
+            const body = document.getElementById('modal-body');
+            document.getElementById('modal-overlay').style.display = 'flex';
+            
+            if (type === 'Audit') {
+                body.innerHTML = `
+                    <div style="position:relative; min-height:480px; overflow:hidden; background:#000; border-radius:12px; padding:25px; border:1px solid rgba(0,204,163,0.3);">
+                        <canvas id="matrix-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.12; z-index:1; pointer-events:none;"></canvas>
+                        <div style="position:relative; z-index:2;">
+                            <p style="color:var(--primary); font-family:monospace; font-size:0.6rem; margin:0; letter-spacing:1px;">[ SYSTEM_DIAGNOSTIC_INITIATED ]</p>
+                            <p style="color:var(--primary); font-family:monospace; font-size:0.6rem; margin:0; letter-spacing:1px; margin-bottom:20px;">[ ARCHITECT_ID ]: J.TAYLOR_042</p>
+                            <div id="audit-chat-window"></div>
+                            <div id="audit-input-area" style="border-top:1px solid rgba(0,204,163,0.1); padding-top:15px;">
+                                <div style="display:flex; gap:10px;">
+                                    <input type="text" id="client-input" placeholder="Analyze specific friction point..." onkeypress="if(event.key==='Enter') ui.sendAuditMessage()">
+                                    <button class="node-btn" onclick="ui.sendAuditMessage()">SEND</button>
+                                </div>
+                                <button class="node-btn" onclick="ui.generateFinalAudit()" style="width:100%; margin-top:10px; border-color:var(--snap-pink); color:var(--snap-pink);">[ GENERATE_FULL_AUDIT ]</button>
+                            </div>
+                        </div>
+                    </div>`;
+                setTimeout(() => { 
+                    ui.initMatrix(); 
+                    ui.addAuditMsg("bot", "System online. I am your AI Auditor. Please describe the primary operational friction in your current business workflow."); 
+                }, 100);
+            } else { body.innerHTML = `<h2 style="color:var(--primary)">${type} Node</h2><p style="opacity:0.6;">Establishing secure link to architect databases...</p>`; }
+        },
+
+        addAuditMsg: (role, text) => {
+            const win = document.getElementById('audit-chat-window');
+            if(!win) return;
+            const div = document.createElement('div');
+            div.className = `msg ${role}`;
+            div.innerText = text;
+            win.appendChild(div);
+            win.scrollTop = win.scrollHeight;
+            ui.auditHistory.push({ role, text });
+        },
+
+        sendAuditMessage: async () => {
+            const input = document.getElementById('client-input');
+            const val = input.value;
+            if(!val) return;
+            ui.addAuditMsg("user", val);
+            input.value = "";
+            try {
+                const res = await fetch(`${API_BASE}/api/audit`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: val, history: ui.auditHistory })
+                });
+                const data = await res.json();
+                ui.addAuditMsg("bot", data.analysis || "Data acknowledged. Scaling diagnostic parameters...");
+            } catch (e) { ui.addAuditMsg("bot", "Uplink unstable. Proceeding with local diagnostic parameters."); }
+        },
+
+        generateFinalAudit: () => {
+            const win = document.getElementById('audit-chat-window');
+            // We count bot messages to ensure all 5 discovery questions were asked + initial greeting
+            const botMsgCount = ui.auditHistory.filter(m => m.role === 'bot').length;
+
+            if (botMsgCount < 6) {
+                ui.addAuditMsg("bot", "I'd love to give you a full report, but I need just a few more details first to make sure it's accurate. Let's finish our quick diagnostic!");
+                return;
+            }
+
+            win.innerHTML = `
+                <div style="color:var(--primary); font-family:monospace; background:rgba(0,204,163,0.05); padding:20px; border-radius:12px; border:1px solid var(--primary); animation: fadeIn 0.8s ease;">
+                    <h3 style="margin-top:0; border-bottom:1px solid rgba(0,204,163,0.2); padding-bottom:10px;">📊 PROFESSIONAL AUDIT SUMMARY</h3>
+                    <div style="font-size:0.8rem; line-height:1.6;">
+                        <p><b>Executive Summary:</b> Based on our conversation, your workflow is currently losing significant velocity to manual data fragmentation.</p>
+                        <p><b>Recommended Architecture:</b> I suggest a <b>Hybrid Agentic Layer</b>. By bridging your current tools with a custom automation script, we can reclaim those lost hours and eliminate the 'headache' points you mentioned.</p>
+                        <p><b>Strategic Impact:</b> This move shifts your operation from 'Reactive' to 'Proactive' management.</p>
+                    </div>
+                    <div style="margin-top:20px; padding-top:10px; border-top:1px solid rgba(0,204,163,0.1); font-size:0.6rem; color:#666; display:flex; justify-content:space-between;">
+                        <span>STATUS: VERIFIED_OPTIMAL</span>
+                        <span>REF: ${Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                    </div>
+                </div>`;
+            document.getElementById('audit-input-area').style.display = 'none';
+        },
+
+        checkUplink: async () => {
+            try {
+                const res = await fetch(`${API_BASE}/`);
+                if (res.ok) {
+                    const dot = document.getElementById('status-dot');
+                    const text = document.getElementById('status-text');
+                    if(dot && text) {
+                        dot.style.background = 'var(--primary)';
+                        dot.style.boxShadow = '0 0 10px var(--primary)';
+                        text.innerText = 'UPLINK_ONLINE';
+                    }
+                }
+            } catch (e) { console.log("Engine offline or spinning up..."); }
+        },
+
+        initMatrix: () => {
+            const canvas = document.getElementById('matrix-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const fontSize = 11;
+            const columns = canvas.width / fontSize;
+            const drops = Array(Math.floor(columns)).fill(1);
+            const draw = () => {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00cca3"; ctx.font = fontSize + "px monospace";
+                for (let i = 0; i < drops.length; i++) {
+                    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            };
+            ui.matrixInterval = setInterval(draw, 35);
+        },
+
+        close: () => { 
+            if(ui.matrixInterval) clearInterval(ui.matrixInterval);
+            document.getElementById('modal-overlay').style.display = 'none'; 
+        }
+    };
+
+    VanillaTilt.init(document.querySelectorAll(".card"), { max: 5, speed: 400, glare: true, "max-glare": 0.1 });
+    ui.checkUplink();
+</script>
+</body>
+</html>
