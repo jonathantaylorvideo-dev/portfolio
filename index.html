@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jonathan D. Taylor | AI Architect</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    
     <style>
         :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
         
@@ -15,14 +17,36 @@
             overflow: hidden; 
         }
 
-        .overlay { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); }
+        .overlay { 
+            height: 100vh; width: 100vw; 
+            display: flex; align-items: center; justify-content: center; 
+            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); 
+        }
         
-        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 10; }
+        /* --- 🍱 BENTO GRID --- */
+        .bento-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            width: 90%; 
+            max-width: 1100px; 
+            z-index: 10; 
+        }
 
         .card { 
-            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 204, 0.2); 
-            border-radius: 22px; padding: 30px; transform-style: preserve-3d; cursor: pointer; position: relative; overflow: hidden;
+            background: var(--card-bg); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(0, 255, 204, 0.2); 
+            border-radius: 22px; 
+            padding: 30px; 
+            transform-style: preserve-3d; 
+            cursor: pointer; 
+            position: relative; 
+            overflow: hidden;
+            transition: border-color 0.3s ease;
         }
+        
+        .card:hover { border-color: var(--primary); }
 
         /* --- 🎥 VIDEO IN HERO BOX --- */
         .video-bg {
@@ -36,9 +60,20 @@
         .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
 
         /* --- 🖥️ MODAL SYSTEM --- */
-        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 999; align-items: center; justify-content: center; }
-        .modal-content { background: #070f0f; border: 1px solid var(--primary); padding: 40px; border-radius: 24px; width: 80%; max-width: 500px; text-align: center; }
-        .close-btn { cursor: pointer; color: var(--primary); font-family: monospace; display: block; margin-top: 20px; }
+        #modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); display: none; z-index: 999; 
+            align-items: center; justify-content: center; 
+        }
+        .modal-content { 
+            background: #070f0f; border: 1px solid var(--primary); 
+            padding: 40px; border-radius: 24px; width: 85%; 
+            max-width: 550px; text-align: left; position: relative;
+        }
+        .close-btn { 
+            cursor: pointer; color: var(--primary); font-family: monospace; 
+            display: block; margin-top: 30px; text-align: center; font-weight: bold;
+        }
 
         @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
     </style>
@@ -47,37 +82,38 @@
 
     <div class="overlay">
         <div class="bento-grid">
-            <div class="card hero" data-tilt>
+            <div class="card hero" data-tilt onclick="ui.open('About')">
                 <video class="video-bg" autoplay muted loop playsinline>
                     <source src="assets/hero-loop.webm" type="video/webm">
                 </video>
                 <span class="tag">[ IDENTITY_CONFIRMED ]</span>
                 <h1>Jonathan D. Taylor</h1>
                 <p>AI Systems Architect & Agentic Workflow Designer</p>
+                <p class="tag" style="margin-top:20px; font-size:0.6rem;">[ CLICK_TO_EXPAND_IDENTITY ]</p>
             </div>
 
             <div class="card" data-tilt onclick="ui.open('Audit')">
                 <span class="tag">01_AUDIT</span>
-                <h3>Strategy Audit</h3>
-                <p>LGS Bottleneck Analysis</p>
+                <h3 style="margin: 10px 0 5px 0;">Strategy Audit</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">LGS Bottleneck Analysis</p>
             </div>
 
             <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')">
                 <span class="tag">02_WORK</span>
-                <h3>Portfolio</h3>
-                <p>Case Studies & Deployments</p>
+                <h3 style="margin: 10px 0 5px 0;">Portfolio</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Case Studies: Adventures of Intrigue (Oct-Jan)</p>
             </div>
 
             <div class="card" data-tilt onclick="ui.open('Vault')">
                 <span class="tag">03_MEDIA</span>
-                <h3>Visual Vault</h3>
-                <p>Underwater & Film Noir</p>
+                <h3 style="margin: 10px 0 5px 0;">Visual Vault</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Film Noir & Underwater Videography</p>
             </div>
 
             <div class="card" data-tilt onclick="ui.open('Terminal')">
                 <span class="tag">04_LOGS</span>
-                <h3>Terminal</h3>
-                <p>System Updates</p>
+                <h3 style="margin: 10px 0 5px 0;">Terminal</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">System Updates & Research Logs</p>
             </div>
         </div>
     </div>
@@ -85,37 +121,80 @@
     <div id="modal-overlay" onclick="ui.close()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="modal-body"></div>
-            <span class="close-btn">[ CLOSE_SYSTEM ]</span>
+            <span class="close-btn" onclick="ui.close()">[ CLOSE_SYSTEM ]</span>
         </div>
     </div>
 
 <script>
-    // 🧠 Centralized UI Controller (Architect Approach)
+    // 🧠 Centralized UI Controller
     const ui = {
         open: (type) => {
+            const overlay = document.getElementById('modal-overlay');
             const body = document.getElementById('modal-body');
-            document.getElementById('modal-overlay').style.display = 'flex';
+            overlay.style.display = 'flex';
             
             const content = {
-                'Audit': `<h2>Audit Node</h2><p>Scanning for LGS bottlenecks...</p><button style="background:var(--primary); padding:10px; border:none; width:100%; margin-top:20px;">RUN_DIAGNOSTIC</button>`,
-                'Work': `<h2>Deployments</h2><p>Case Study: Adventures of Intrigue<br>Timeline: Oct 28 - Jan 09</p>`,
-                'Vault': `<h2>Visual Vault</h2><p>Underwater Videography Archive Loading...</p>`,
-                'Terminal': `<h2>System Logs</h2><p style="font-family:monospace;">> Node Active<br>> Vibe Coding engaged.</p>`
+                'About': `
+                    <h2 style="color:var(--primary); border-bottom: 1px solid var(--primary); padding-bottom: 10px;">Jonathan D. Taylor</h2>
+                    <p style="font-style: italic; color: var(--primary); font-size: 0.9rem; margin-bottom: 15px;">AI Systems Architect | Solo Operator</p>
+                    <p>I’ve always enjoyed a puzzle. That’s what brought me to AI Architecture—the challenge of merging cold analytics with the human soul of a story.</p>
+                    <p>I built my practice for the <strong>agile small business</strong>. I offer the ability to iterate and deploy custom AI solutions faster and more affordably than any agency, with a level of personal care that only a solo operator provides.</p>
+                    <p style="font-family: monospace; font-size: 0.8rem; background: rgba(0,255,204,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary); margin-top: 20px;">
+                        > MISSION_LOG: "Aspiring circumnavigator. Seeking the balance between nature and the digital."
+                    </p>`,
+                'Audit': `
+                    <h2 style="color:var(--primary)">Strategy Audit</h2>
+                    <p>Select your primary friction point for LGS bottleneck analysis:</p>
+                    <select style="width:100%; margin:15px 0; padding:12px; background:#111; color:#fff; border:1px solid var(--primary); border-radius:8px;">
+                        <option>Inventory Management Automation</option>
+                        <option>Community Engagement / Discord Agents</option>
+                        <option>E-Commerce Syncing</option>
+                        <option>Custom Tooling</option>
+                    </select>
+                    <button style="width:100%; padding:15px; background:var(--primary); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">RUN_DIAGNOSTIC</button>`,
+                'Work': `
+                    <h2 style="color:var(--primary)">Deployments</h2>
+                    <p><strong>Case Study: Adventures of Intrigue</strong></p>
+                    <p style="font-size:0.9rem; opacity:0.8; margin-bottom: 15px;">Timeline: Oct 2025 - Jan 2026</p>
+                    <p>Focused on organic social growth, creative backend optimization, and bridging data insights with narrative impact for a St. Louis venue.</p>`,
+                'Vault': `
+                    <h2 style="color:var(--primary)">Visual Vault</h2>
+                    <p>Underwater Videography & Film Noir Archive.</p>
+                    <div style="border: 1px dashed var(--primary); padding: 40px; margin-top: 20px; text-align: center; opacity: 0.5;">
+                        [ VIDEO_STREAM_ENCRYPTED ]<br>
+                        <span style="font-size:0.7rem;">(Awaiting Gallery Integration)</span>
+                    </div>`,
+                'Terminal': `
+                    <h2 style="color:var(--primary)">System Terminal</h2>
+                    <div style="font-family: monospace; font-size: 0.85rem; color: #aaa;">
+                        <p>> [SCANNING_ENVIRONMENT]... <span style="color:var(--primary)">SUCCESS</span></p>
+                        <p>> [CURRENT_GOAL] Solo Blue Water Sailing Research</p>
+                        <p>> [STATUS] Vibe Coding: Enabled</p>
+                        <p>> [CORE_VALUE] Agility > Overhead.</p>
+                    </div>`
             };
             body.innerHTML = content[type] || 'No Data Found';
         },
         close: () => { document.getElementById('modal-overlay').style.display = 'none'; }
     };
 
-    // Parallax
+    // 🌌 Parallax (Background Movement)
     document.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
         document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
     });
 
-    // Init Tilt
-    VanillaTilt.init(document.querySelectorAll(".card"), { max: 8, speed: 1000, glare: true, "max-glare": 0.2 });
+    // 🧊 3D Tilt Initialization
+    if (window.VanillaTilt) {
+        VanillaTilt.init(document.querySelectorAll(".card"), { 
+            max: 8, 
+            speed: 1000, 
+            glare: true, 
+            "max-glare": 0.2,
+            scale: 1.02
+        });
+    }
 </script>
 </body>
 </html>
