@@ -6,92 +6,64 @@ const axios = require('axios');
 dotenv.config();
 const app = express();
 
-// Standard Middleware for smooth Frontend-Backend communication
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 /**
- * 1. RENDER HEALTH CHECK
- * Confirms the engine is online and pings are reaching the target.
+ * 1. HEALTH CHECK & UPLINK VERIFICATION
  */
 app.get('/', (req, res) => {
     res.status(200).send('AI_STRATEGY_ENGINE: ONLINE [STATUS_CODE: 200]');
 });
 
 /**
- * 2. FRIENDLY PROFESSIONAL AI AUDITOR (5-6 STAGE DISCOVERY)
- * This logic cycles through a conversational interview before enabling the report.
+ * 2. PROFESSIONAL DISCOVERY AUDITOR
+ * Cycles through 5 stages of business inquiry.
  */
 app.post('/api/audit', async (req, res) => {
-    const { message, history } = req.body;
+    const { history } = req.body;
     
-    // Count only the bot's questions to track diagnostic progress
-    const questionCount = history.filter(m => m.role === 'bot').length;
+    // Count how many times the BOT has spoken to determine the next question
+    const botMessages = (history || []).filter(m => m.role === 'bot');
+    const index = botMessages.length;
 
-    try {
-        let analysisText = "";
+    const questions = [
+        "That's a solid starting point. To help me understand the impact, roughly how many hours a week is your team currently spending on these manual tasks?",
+        "Got it. Regarding your tech stack—are you currently using any specific software or APIs for these areas, or is most of this handled via spreadsheets?",
+        "That makes sense. If we were to design a custom solution, would you prioritize real-time data accuracy or simply reducing manual entry time?",
+        "Almost there! In your current workflow, what is the single biggest 'headache' or fail-point that causes the most friction?",
+        "Final question: What does a 'perfect' workday look like for you once these bottlenecks are automated?",
+        "Thank you for those insights. I've finished mapping your business architecture. You can now click [ GENERATE_FULL_AUDIT ] for your report."
+    ];
 
-        // Diagnostic Tree: Friendly Professional Voice
-        switch(questionCount) {
-            case 1:
-                analysisText = "That's a solid starting point. To help me understand the impact, roughly how many hours a week is your team currently spending on these manual tasks?";
-                break;
-            case 2:
-                analysisText = "Got it. Regarding your tech stack—are you currently using any specific software or APIs for these areas, or is most of this handled via spreadsheets and manual entry?";
-                break;
-            case 3:
-                analysisText = "That makes sense. If we were to design a custom solution, would you prioritize real-time data accuracy across all platforms, or simply reducing the time spent on repetitive entry?";
-                break;
-            case 4:
-                analysisText = "Almost there! In your current workflow, what is the biggest 'headache' or fail-point that currently causes the most friction?";
-                break;
-            case 5:
-                analysisText = "Final question for the diagnostic: What does a 'perfect' workday look like for you once these bottlenecks are automated? (e.g., total hands-off automation or a streamlined dashboard?)";
-                break;
-            default:
-                // This message unlocks the "Generate Full Audit" button functionality on the frontend
-                analysisText = "Thank you for those detailed insights. I've finished mapping your business architecture. You can now click [ GENERATE_FULL_AUDIT ] for your custom deployment strategy.";
-        }
+    // Select the question based on conversation progress
+    const responseText = questions[index] || questions[questions.length - 1];
 
-        res.json({ status: "SUCCESS", analysis: analysisText });
-    } catch (err) {
-        console.error("[ERROR]: Audit Diagnostic Interrupted", err);
-        res.status(500).json({ error: "DIAGNOSTIC_FAILURE" });
-    }
+    res.json({ status: "SUCCESS", analysis: responseText });
 });
 
 /**
- * 3. VISUAL VAULT ANALYZER
- * Keeps the multimodal node functional for future image analysis.
+ * 3. VISUAL VAULT ENDPOINT (NON-DESTRUCTIVE)
  */
 app.post('/api/analyze', async (req, res) => {
-    try {
-        res.json({
-            name: "SCAN_VERIFIED",
-            grade: "A [ARCHITECT_STAMP]",
-            value: "OPTIMAL_FLOW",
-            lore: "Infrastructure alignment confirmed. Visual data matches architectural standards."
-        });
-    } catch (err) {
-        res.status(500).json({ error: "OPTICAL_TIMEOUT" });
-    }
+    res.json({
+        name: "SCAN_VERIFIED",
+        grade: "A [ARCHITECT_STAMP]",
+        value: "OPTIMAL_FLOW",
+        lore: "Infrastructure alignment confirmed."
+    });
 });
 
 /**
- * 4. SERVER BINDING (CRITICAL FOR RENDER)
- * Uses 0.0.0.0 and process.env.PORT to ensure the service is reachable.
+ * 4. RENDER BINDING
  */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`-----------------------------------------`);
-    console.log(`AI_STRATEGY_ENGINE: UPLINK ESTABLISHED`);
-    console.log(`BINDING_TO_PORT: ${PORT}`);
-    console.log(`-----------------------------------------`);
+    console.log(`AI_STRATEGY_ENGINE: UPLINK ESTABLISHED ON PORT ${PORT}`);
 });
 
 /**
  * 5. STAY_AWAKE PROTOCOL
- * Prevents Render's Free Tier from spinning down by pinging itself every 14 minutes.
  */
 const PING_INTERVAL = 14 * 60 * 1000; 
 const SELF_URL = 'https://ai-strategy-engine.onrender.com';
@@ -99,8 +71,8 @@ const SELF_URL = 'https://ai-strategy-engine.onrender.com';
 setInterval(async () => {
     try {
         await axios.get(SELF_URL);
-        console.log(`[SYSTEM_MAINTENANCE]: Self-ping successful. Engine active.`);
+        console.log(`[SYSTEM_MAINTENANCE]: Self-ping successful.`);
     } catch (err) {
-        console.error("[SYSTEM_ERROR]: Self-ping failed. Check logs.");
+        console.error("[SYSTEM_ERROR]: Self-ping failed.");
     }
 }, PING_INTERVAL);
