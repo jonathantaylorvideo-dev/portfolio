@@ -10,7 +10,7 @@
     <style>
         :root { 
             --primary: #00ffcc; 
-            --card-bg: rgba(5, 10, 10, 0.75); 
+            --card-bg: rgba(5, 10, 10, 0.8); 
         }
         
         body, html { 
@@ -19,25 +19,30 @@
             overflow: hidden; 
         }
 
-        /* --- 🌃 THE PARALLAX BACKGROUND --- */
+        /* --- 🌃 PARALLAX IMAGE --- */
         #city-bg {
             position: fixed;
-            top: -15%; left: -15%; /* Extra room for movement */
+            top: -15%; left: -15%;
             width: 130%; height: 130%;
-            /* 🚨 PATH CONFIRMED FROM SCREENSHOT */
             background: url('assets/city.png') no-repeat center center;
             background-size: cover;
             z-index: -3;
             will-change: transform;
         }
 
-        /* --- 🎥 VIDEO OVERLAY --- */
+        /* --- 🎥 HERO VIDEO OVERLAY --- */
         .video-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2; pointer-events: none;
-            mix-blend-mode: screen; opacity: 0.35;
+            mix-blend-mode: screen; 
+            opacity: 0.4;
         }
-        video { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); }
+        
+        video { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            filter: grayscale(1) contrast(1.2); 
+        }
 
         /* --- 🍱 INTERFACE --- */
         .wrapper { 
@@ -52,23 +57,23 @@
 
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(0, 255, 204, 0.2);
             border-radius: 24px; padding: 35px;
             transform-style: preserve-3d;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
         }
 
         .hero { grid-column: span 3; }
         .hero h1 { 
             font-size: 3.5rem; margin: 0; color: var(--primary); 
             transform: translateZ(80px);
-            text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+            text-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
         }
 
         button { 
             width: 100%; padding: 12px; background: var(--primary); 
-            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            border: none; border-radius: 8px; font-weight: 800; cursor: pointer;
         }
 
         @media (max-width: 850px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
@@ -79,7 +84,7 @@
     <div id="city-bg"></div>
 
     <div class="video-layer">
-        <video id="bgVideo" autoplay muted loop playsinline>
+        <video id="bgVideo" autoplay muted loop playsinline poster="assets/city.png">
             <source src="assets/hero-loop.webm" type="video/webm">
         </video>
     </div>
@@ -90,7 +95,7 @@
             <div class="card hero" data-tilt>
                 <h1>Jonathan D. Taylor</h1>
                 <p style="transform: translateZ(40px); opacity: 0.8;">AI Systems Architect</p>
-                <p style="color: var(--primary); font-family: monospace; font-size: 0.8rem;">[ STATUS: LINK_ESTABLISHED ]</p>
+                <p style="color: var(--primary); font-family: monospace; font-size: 0.8rem;">[ VIDEO_FEED: STABLE ]</p>
             </div>
 
             <div class="card" data-tilt>
@@ -104,7 +109,7 @@
             </div>
 
             <div class="card" data-tilt>
-                <h3>Creative</h3>
+                <h3>Lab</h3>
                 <p style="font-size: 0.8rem;">Prog-Folk Noir</p>
             </div>
 
@@ -112,28 +117,25 @@
     </div>
 
 <script>
-    // 🕹️ Aggressive Tilt Initialization
     window.onload = function() {
+        // Initialize Tilt
         VanillaTilt.init(document.querySelectorAll(".card"), {
-            max: 20,
-            speed: 1000,
-            glare: true,
-            "max-glare": 0.5,
-            perspective: 800, /* Lower = more intense tilt */
-            scale: 1.05
+            max: 20, speed: 1000, glare: true, "max-glare": 0.5, perspective: 800, scale: 1.05
         });
 
-        // 🌌 High-Response Parallax
+        // Background Parallax Logic
         const bg = document.getElementById('city-bg');
         document.addEventListener('mousemove', (e) => {
-            const moveX = (window.innerWidth / 2 - e.pageX) / 20;
-            const moveY = (window.innerHeight / 2 - e.pageY) / 20;
-            bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            const x = (window.innerWidth / 2 - e.pageX) / 25;
+            const y = (window.innerHeight / 2 - e.pageY) / 25;
+            bg.style.transform = `translate(${x}px, ${y}px)`;
         });
         
-        // Video Playback
-        const v = document.getElementById('bgVideo');
-        if(v) v.play().catch(() => {});
+        // Force video play on first click (Browser security often blocks autoplay)
+        document.body.addEventListener('click', () => {
+            const v = document.getElementById('bgVideo');
+            if(v) v.play();
+        }, { once: true });
     };
 </script>
 </body>
