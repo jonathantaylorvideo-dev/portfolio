@@ -5,6 +5,10 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+    if (!process.env.GOOGLE_API_KEY) {
+  console.error("CRITICAL: GOOGLE_API_KEY is missing from environment variables.");
+  return res.status(500).json({ error: "Server configuration error: Missing API Key" });
+}
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
