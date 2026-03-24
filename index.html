@@ -6,49 +6,167 @@
     <title>Jonathan D. Taylor | AI Architect</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <style>
-        :root { --primary: #00ffcc; --snap-pink: #ff007f; --card-bg: rgba(5, 12, 12, 0.9); }
-        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; background: #000 url('assets/city.png') no-repeat center center fixed; background-size: 110%; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        :root { --primary: #00ffcc; --snap-pink: #ff007f; --card-bg: rgba(5, 12, 12, 0.85); }
+        
+        /* FIX: Background must be on the body, but Grid must be Z-Indexed higher */
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; width: 100vw; 
+            background: #000 url('assets/city.png') no-repeat center center fixed; 
+            background-size: cover; color: #fff; font-family: 'Segoe UI', sans-serif; 
+            overflow-x: hidden; 
+        }
         
         .overlay { 
-            position: relative; height: 100vh; width: 100vw; 
+            position: relative; min-height: 100vh; width: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); 
-            z-index: 5; 
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.7) 100%); 
+            z-index: 10; padding: 40px 0;
         }
         
-        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 10; }
+        .bento-grid { 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; 
+            width: 90%; max-width: 1100px; position: relative; z-index: 20; 
+        }
         
         .card { 
-            background: var(--card-bg); backdrop-filter: blur(20px); 
+            background: var(--card-bg); backdrop-filter: blur(15px); 
             border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 22px; 
             padding: 30px; transform-style: preserve-3d; cursor: pointer; 
-            position: relative; overflow: hidden; transition: border-color 0.3s ease; 
-            pointer-events: auto;
+            position: relative; overflow: hidden; transition: all 0.3s ease; 
         }
         
-        .card:hover { border-color: var(--primary); }
-        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; mix-blend-mode: screen; filter: grayscale(1); }
+        .card:hover { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); }
         .hero { grid-column: span 3; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
-        .hero h1 { font-size: 3.2rem; margin: 0; color: var(--primary); text-shadow: 0 0 20px rgba(0,255,204,0.5); }
-        .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
+        .hero h1 { font-size: 3rem; margin: 0; color: var(--primary); text-shadow: 0 0 15px rgba(0,255,204,0.4); }
+        .tag { font-family: monospace; color: var(--primary); font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* --- HUD & SCAN EFFECTS --- */
-        @keyframes scanline {
-            0% { top: 0%; opacity: 0; }
-            5% { opacity: 1; }
-            95% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
+        /* --- MARVEL SNAP HUD STYLES --- */
+        @keyframes scanline { 0% { top: 0%; opacity: 0; } 5% { opacity: 1; } 95% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .scan-line { position: absolute; width: 100%; height: 4px; background: linear-gradient(to right, transparent, var(--snap-pink), #fff, var(--snap-pink), transparent); box-shadow: 0 0 15px var(--snap-pink); z-index: 10; animation: scanline 3s linear infinite; pointer-events: none; }
+        .bracket { position: absolute; width: 15px; height: 15px; border: 2px solid var(--snap-pink); box-shadow: 0 0 8px var(--snap-pink); z-index: 11; }
+        .tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+        .tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+        .br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+        .hud-text { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-family: monospace; font-size: 0.55rem; color: var(--primary); letter-spacing: 1.5px; z-index: 11; }
 
-        .scan-line {
-            position: absolute;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right, transparent, var(--snap-pink), #fff, var(--snap-pink), transparent);
-            box-shadow: 0 0 15px var(--snap-pink);
-            z-index: 10;
-            animation: scanline 3s linear infinite;
-            pointer-events: none;
-        }
+        /* MODAL STYLES */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 999; align-items: center; justify-content: center; }
+        .modal-content { background: #070f0f; border: 1px solid var(--primary); padding: 30px; border-radius: 24px; width: 90%; max-width: 500px; position: relative; }
+        .input-tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .in-tab { padding: 5px 10px; font-family: monospace; font-size: 0.6rem; cursor: pointer; opacity: 0.5; }
+        .in-tab.active { opacity: 1; color: var(--primary); border-bottom: 1px solid var(--primary); }
+        .vault-panel { display: none; }
+        .vault-panel.active { display: block; }
+        .node-btn { padding: 8px 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); font-family: monospace; font-size: 0.6rem; cursor: pointer; border-radius: 4px; }
+        
+        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
+    </style>
+</head>
+<body>
 
-        .bracket { position: absolute; width: 20px; height:
+    <div class="overlay">
+        <div class="bento-grid">
+            <div class="card hero" data-tilt onclick="ui.open('About')">
+                <span class="tag">[ IDENTITY_CONFIRMED ]</span>
+                <h1>Jonathan D. Taylor</h1>
+                <p>AI Systems Architect & Agentic Workflow Designer</p>
+            </div>
+            
+            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>Strategy</h3><p style="font-size:0.75rem; opacity:0.6;">LGS Analysis</p></div>
+            <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.75rem; opacity:0.6;">Adventures of Intrigue</p></div>
+            <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.75rem; opacity:0.6;">AI Scanner</p></div>
+            <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.75rem; opacity:0.6;">System Logs</p></div>
+        </div>
+    </div>
+
+    <div id="modal-overlay" onclick="ui.close()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-body"></div>
+            <div style="text-align:center; margin-top:20px; cursor:pointer; color:var(--primary); font-family:monospace; font-size:0.7rem;" onclick="ui.close()">[ EXIT_NODE ]</div>
+        </div>
+    </div>
+
+<script>
+    const ui = {
+        open: (type) => {
+            const body = document.getElementById('modal-body');
+            document.getElementById('modal-overlay').style.display = 'flex';
+            if (type === 'Vault') {
+                body.innerHTML = `
+                    <h2 style="color:var(--primary); font-size:1.2rem; margin-bottom:15px;">VISUAL_VAULT</h2>
+                    <div class="input-tabs">
+                        <div class="in-tab active" onclick="ui.switchInTab('camera')">TARGET_LENS</div>
+                        <div class="in-tab" onclick="ui.switchInTab('upload')">DATA_UPLOAD</div>
+                    </div>
+                    <div id="camera" class="vault-panel active">
+                        <div style="background:#000; border:1px solid rgba(255,0,127,0.3); height:220px; border-radius:12px; position:relative; overflow:hidden;">
+                            <div class="scan-line"></div>
+                            <div class="bracket tl"></div><div class="bracket tr"></div><div class="bracket bl"></div><div class="bracket br"></div>
+                            <div class="hud-text">SYNC_ACTIVE</div>
+                            <video id="vault-preview" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                            <div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:10px; z-index:12;">
+                                <button class="node-btn" style="border-color:var(--snap-pink); color:var(--snap-pink);" onclick="ui.activateCamera('user')">FRONT</button>
+                                <button class="node-btn" style="background:var(--snap-pink); color:#000; border:none;" onclick="ui.activateCamera('environment')">REAR</button>
+                            </div>
+                        </div>
+                        <button class="node-btn" id="snap-btn" style="width:100%; margin-top:10px; display:none; border-color:var(--snap-pink); color:var(--snap-pink);" onclick="ui.captureAndScan()">[ INITIATE_SCAN ]</button>
+                    </div>
+                    <div id="upload" class="vault-panel">
+                        <div style="border:1px dashed #444; height:220px; border-radius:12px; display:flex; align-items:center; justify-content:center;" onclick="document.getElementById('vault-file').click()">SELECT_FILE</div>
+                    </div>
+                    <input type="file" id="vault-file" style="display:none" accept="image/*" onchange="ui.runRealScan(this.files[0])">
+                    <div id="vault-results" style="margin-top:15px; display:none; font-family:monospace;">
+                        <p id="scan-status" style="font-size:0.7rem; color:var(--snap-pink);">[ SCANNING... ]</p>
+                        <div id="vault-data-display" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;"></div>
+                    </div>`;
+            } else if (type === 'About') {
+                body.innerHTML = `<h2 style="color:var(--primary)">Jonathan D. Taylor</h2><p>AI Systems Architect | St. Louis</p><p>Mission: Circumnavigation.</p>`;
+            } else { body.innerHTML = `<h2>Node: ${type}</h2><p>Data stream active.</p>`; }
+        },
+        switchInTab: (id) => {
+            document.querySelectorAll('.in-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.vault-panel').forEach(v => v.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(id).classList.add('active');
+        },
+        activateCamera: async (mode) => {
+            const v = document.getElementById('vault-preview');
+            const s = document.getElementById('snap-btn');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode } });
+            v.srcObject = stream; s.style.display = 'block';
+        },
+        captureAndScan: () => {
+            const v = document.getElementById('vault-preview');
+            const c = document.createElement('canvas');
+            const scale = Math.min(1, 1024 / Math.max(v.videoWidth, v.videoHeight));
+            c.width = v.videoWidth * scale; c.height = v.videoHeight * scale;
+            c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+            const b64 = c.toDataURL('image/jpeg', 0.7).split(',')[1];
+            v.srcObject.getTracks().forEach(t => t.stop());
+            ui.runRealScan(null, b64);
+        },
+        runRealScan: async (file, d64 = null) => {
+            const res = document.getElementById('vault-results');
+            const status = document.getElementById('scan-status');
+            const display = document.getElementById('vault-data-display');
+            res.style.display = 'block';
+            let b64 = d64;
+            if (file) {
+                const b = await createImageBitmap(file);
+                const c = document.createElement('canvas');
+                c.width = b.width; c.height = b.height;
+                c.getContext('2d').drawImage(b, 0, 0);
+                b64 = c.toDataURL('image/jpeg', 0.7).split(',')[1];
+            }
+            const response = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64 }) });
+            const data = await response.json();
+            status.innerText = `[ SUCCESS ]: ${data.name}`;
+            display.innerHTML = `<div style="font-size:0.6rem;">GRADE: ${data.grade}</div><div style="font-size:0.6rem;">VALUE: ${data.value}</div><div style="grid-column:span 2; font-size:0.6rem; color:var(--primary);">${data.lore}</div>`;
+        },
+        close: () => { document.getElementById('modal-overlay').style.display = 'none'; }
+    };
+    VanillaTilt.init(document.querySelectorAll(".card"), { max: 8, speed: 1000, glare: true, "max-glare": 0.2 });
+</script>
+</body>
+</html>
