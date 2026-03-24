@@ -1,11 +1,26 @@
 {
-  "name": "portfolio-backend",
+  "name": "ai-strategy-engine",
   "version": "1.0.0",
-  "type": "module",
-  "engines": {
-    "node": "20.x"
+  "description": "AI Systems Architecture & Agentic Workflow Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "ai",
+    "architecture",
+    "lgs-automation",
+    "fiji-infrastructure"
+  ],
+  "author": "Jonathan D. Taylor",
+  "license": "ISC",
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
