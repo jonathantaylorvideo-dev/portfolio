@@ -2,207 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan D. Taylor | AI Architect</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jonathan Taylor | AI Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
-        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; background: #000 url('assets/city.png') no-repeat center center fixed; background-size: 110%; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        
-        .overlay { 
-            position: relative; height: 100vh; width: 100vw; 
-            display: flex; align-items: center; justify-content: center; 
-            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); 
-            z-index: 5; 
+        /* Custom "Vibe" styling for the Bento Grid */
+        .bento-card {
+            background: rgba(15, 15, 20, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
-        
-        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 10; }
-        
-        .card { 
-            background: var(--card-bg); backdrop-filter: blur(20px); 
-            border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 22px; 
-            padding: 30px; transform-style: preserve-3d; cursor: pointer; 
-            position: relative; overflow: hidden; transition: border-color 0.3s ease; 
-            pointer-events: auto;
+        .bento-card:hover {
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
-        
-        .card:hover { border-color: var(--primary); }
-        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; mix-blend-mode: screen; filter: grayscale(1); }
-        .hero { grid-column: span 3; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
-        .hero h1 { font-size: 3.2rem; margin: 0; color: var(--primary); text-shadow: 0 0 20px rgba(0,255,204,0.5); }
-        .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
-
-        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 999; align-items: center; justify-content: center; }
-        .modal-content { background: #070f0f; border: 1px solid var(--primary); padding: 30px; border-radius: 24px; width: 90%; max-width: 550px; text-align: left; position: relative; }
-        .input-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .in-tab { padding: 6px 12px; font-family: monospace; font-size: 0.65rem; cursor: pointer; border: 1px solid transparent; border-radius: 4px; opacity: 0.5; color: #fff; }
-        .in-tab.active { border-color: var(--primary); color: var(--primary); opacity: 1; background: rgba(0,255,204,0.1); }
-        .vault-panel { display: none; min-height: 220px; }
-        .vault-panel.active { display: block; }
-        .node-btn { padding:8px 16px; background:transparent; border:1px solid var(--primary); color:var(--primary); font-size:0.6rem; font-weight:bold; font-family:monospace; cursor:pointer; border-radius:4px; transition: 0.2s; }
-        .node-btn:hover { background: rgba(0,255,204,0.1); }
-        .close-btn { cursor: pointer; color: var(--primary); font-family: monospace; display: block; margin-top: 25px; text-align: center; }
-        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
+        #vault-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #000;
+        }
+        .scanning-loader {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+            color: #0ff;
+            font-family: monospace;
+            z-index: 10;
+        }
     </style>
 </head>
-<body>
+<body class="bg-black text-slate-300 font-sans min-h-screen p-4 md:p-8">
 
-    <div class="overlay">
-        <div class="bento-grid">
-            <div class="card hero" data-tilt onclick="ui.open('About')">
-                <video class="video-bg" autoplay muted loop playsinline><source src="assets/hero-loop.webm" type="video/webm"></video>
-                <span class="tag">[ IDENTITY_CONFIRMED ]</span>
-                <h1>Jonathan D. Taylor</h1>
-                <p>AI Systems Architect & Agentic Workflow Designer</p>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        <div class="md:col-span-2 bento-card p-6 rounded-3xl relative overflow-hidden">
+            <div id="scan-overlay" class="scanning-loader"> [ SCANNING_PAYLOAD... ] </div>
+            
+            <h3 class="text-cyan-400 font-mono mb-4 text-sm tracking-widest uppercase">Visual Vault v2.0</h3>
+            
+            <div class="relative">
+                <video id="vault-preview" autoplay playsinline muted></video>
+                <div id="scan-result" class="mt-4 p-4 bg-black/50 rounded-lg border border-cyan-900/50 hidden">
+                    <p id="res-name" class="text-white font-bold text-lg"></p>
+                    <p id="res-lore" class="text-xs text-slate-400 mt-1 italic"></p>
+                    <div class="flex justify-between mt-3 text-[10px] font-mono uppercase tracking-tighter">
+                        <span class="text-cyan-500">Grade: <span id="res-grade">--</span></span>
+                        <span class="text-emerald-500">Value: <span id="res-value">--</span></span>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>Strategy Audit</h3><p style="font-size:0.8rem; opacity:0.7;">LGS Bottleneck Analysis</p></div>
-            <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.8rem; opacity:0.7;">Adventures of Intrigue Case Study</p></div>
-            <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.8rem; opacity:0.7;">AI Hobby Scanning Node</p></div>
-            <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.8rem; opacity:0.7;">System Logs</p></div>
+
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                <button onclick="ui.startCamera()" class="bg-cyan-900/30 border border-cyan-500/50 text-cyan-400 py-2 rounded-lg text-xs hover:bg-cyan-500 hover:text-black transition">ACTIVATE_LENS</button>
+                <button onclick="ui.captureAndScan()" class="bg-white text-black py-2 rounded-lg text-xs font-bold hover:bg-cyan-400 transition">CAPTURE_SCAN</button>
+            </div>
         </div>
+
+        <div class="bento-card p-6 rounded-3xl">
+            <h3 class="text-slate-500 font-mono text-xs mb-2">PROJECTS</h3>
+            <p class="text-sm">Fiji Infrastructure Tracker</p>
+        </div>
+        <div class="bento-card p-6 rounded-3xl">
+            <h3 class="text-slate-500 font-mono text-xs mb-2">VIBE</h3>
+            <p class="text-sm">Cyberpunk / Industrial</p>
+        </div>
+
     </div>
 
-    <div id="modal-overlay" onclick="ui.close()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="modal-body"></div>
-            <span class="close-btn" onclick="ui.close()">[ EXIT_NODE ]</span>
-        </div>
-    </div>
-
-<script>
-    const ui = {
-        open: (type) => {
-            const body = document.getElementById('modal-body');
-            document.getElementById('modal-overlay').style.display = 'flex';
-            if (type === 'Vault') {
-                body.innerHTML = `
-                    <h2 style="color:var(--primary); margin-bottom:5px;">Visual Vault</h2>
-                    <p style="font-size:0.8rem; opacity:0.6; margin-bottom:20px;">Multimodal AI Input Node (Gemini 1.5 Pro)</p>
-                    <div class="input-tabs">
-                        <div class="in-tab active" onclick="ui.switchInTab('camera')">LIVE_CAMERA</div>
-                        <div class="in-tab" onclick="ui.switchInTab('upload')">IMAGE_UPLOAD</div>
-                    </div>
-                    <div id="camera" class="vault-panel active">
-                        <div style="background:#000; border:1px solid #333; height:180px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden;">
-                            <video id="vault-preview" autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
-                            <div style="margin-top:15px; display:flex; gap:10px; z-index:2;">
-                                <button class="node-btn" onclick="ui.activateCamera('user')">FRONT_LENS</button>
-                                <button class="node-btn" style="background:var(--primary); color:#000;" onclick="ui.activateCamera('environment')">REAR_LENS</button>
-                            </div>
-                        </div>
-                        <button class="node-btn" id="snap-btn" style="width:100%; margin-top:10px; display:none;" onclick="ui.captureAndScan()">[ CAPTURE_SCAN ]</button>
-                    </div>
-                    <div id="upload" class="vault-panel">
-                        <div style="border:2px dashed #333; height:180px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#555; cursor:pointer;" onclick="document.getElementById('vault-file').click()">
-                            <span style="font-size:0.7rem;">SELECT_COLLECTIBLE_IMAGE</span>
-                        </div>
-                    </div>
-                    <input type="file" id="vault-file" style="display:none" accept="image/*" onchange="ui.runRealScan(this.files[0])">
-                    <div id="vault-results" style="margin-top:20px; display:none; border-top:1px solid #222; padding-top:15px;">
-                        <p id="scan-status" style="font-family:monospace; font-size:0.75rem; color:var(--primary);">[ INITIALIZING_SCAN ]</p>
-                        <div id="vault-data-display" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;"></div>
-                    </div>`;
-            } else if (type === 'About') {
-                body.innerHTML = `
-                    <h2 style="color:var(--primary)">Jonathan D. Taylor</h2>
-                    <p style="font-style: italic; color: var(--primary); font-size: 0.9rem;">AI Systems Architect | 42 | St. Louis</p>
-                    <p>Building agile AI infrastructure for small businesses with the precision of a solo craftsman.</p>
-                    <p style="font-family: monospace; font-size: 0.8rem; background: rgba(0,255,204,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary);">
-                        > MISSION: Circumnavigation. Balancing technical architecture with blue water sailing.
-                    </p>`;
-            } else { body.innerHTML = `<h2>Node: ${type}</h2><p>Data stream active.</p>`; }
-        },
-
-        switchInTab: (tabId) => {
-            document.querySelectorAll('.in-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.vault-panel').forEach(v => v.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        },
-
-        activateCamera: async (mode) => {
-            const video = document.getElementById('vault-preview');
-            const snapBtn = document.getElementById('snap-btn');
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode }, audio: false });
-                video.srcObject = stream;
-                snapBtn.style.display = 'block';
-            } catch (err) { alert("Camera Access Error: " + err.message); }
-        },
-
-        // CRITICAL FIX: Downscaling image to stay under Vercel payload limits
-        captureAndScan: () => {
-            const video = document.getElementById('vault-preview');
-            const canvas = document.createElement('canvas');
-            const maxDim = 1024;
-            const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight));
-            
-            canvas.width = video.videoWidth * scale;
-            canvas.height = video.videoHeight * scale;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
-            video.srcObject.getTracks().forEach(track => track.stop());
-            ui.runRealScan(null, base64);
-        },
-
-        runRealScan: async (file, directBase64 = null) => {
-            const results = document.getElementById('vault-results');
-            const statusText = document.getElementById('scan-status');
-            const dataBox = document.getElementById('vault-data-display');
-            results.style.display = 'block';
-            statusText.innerText = "[ COMPRESSING_&_TRANSMITTING ]...";
-
-            try {
-                let base64 = directBase64;
-                if (file) {
-                    const bitmap = await createImageBitmap(file);
-                    const canvas = document.createElement('canvas');
-                    const scale = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height));
-                    canvas.width = bitmap.width * scale; canvas.height = bitmap.height * scale;
-                    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-                    base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+    <script>
+        const ui = {
+            startCamera: async () => {
+                const video = document.getElementById('vault-preview');
+                document.getElementById('scan-result').classList.add('hidden');
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: "environment" }, 
+                        audio: false 
+                    });
+                    video.srcObject = stream;
+                } catch (err) {
+                    alert("Camera access denied or not found.");
                 }
+            },
 
-                const response = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64 })
-                });
+            captureAndScan: () => {
+                const video = document.getElementById('vault-preview');
+                if (!video.srcObject) return alert("Activate lens first.");
 
-                if (!response.ok) throw new Error(`HTTP_${response.status}`);
-                const data = await response.json();
+                const canvas = document.createElement('canvas');
+                document.getElementById('scan-overlay').style.display = 'flex';
 
-                statusText.innerText = `[ ANALYSIS_COMPLETE ]: ${data.name || 'Identified'}`;
-                dataBox.innerHTML = `
-                    <div style="font-size:0.7rem; color:#888;">GRADE: <span style="color:#fff;">${data.grade || '--'}</span></div>
-                    <div style="font-size:0.7rem; color:#888;">VALUE: <span style="color:#fff;">${data.value || '--'}</span></div>
-                    <div style="grid-column: span 2; font-size:0.65rem; color:var(--primary); margin-top:5px;">${data.lore || ''}</div>`;
-            } catch (err) { statusText.innerText = `[ SCAN_FAILED ]: ${err.message}`; }
-        },
+                // ARCHITECT'S DOWNSIZE: Fixes the 500 Payload Limit
+                const maxDim = 800; 
+                const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight));
+                
+                canvas.width = video.videoWidth * scale;
+                canvas.height = video.videoHeight * scale;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // COMPRESSION: 0.5 quality ensures Vercel doesn't crash on Wolverine #1 detail
+                const base64 = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
+                
+                // RESOURCE CLEANUP: Free memory for the API call
+                video.srcObject.getTracks().forEach(track => track.stop());
+                
+                ui.runRealScan(base64);
+            },
 
-        toBase64: file => new Promise((resolve, reject) => { 
-            const reader = new FileReader(); reader.readAsDataURL(file); 
-            reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e); 
-        }),
+            runRealScan: async (base64Data) => {
+                try {
+                    const response = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64Data })
+                    });
 
-        close: () => { 
-            const video = document.getElementById('vault-preview');
-            if(video && video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-            document.getElementById('modal-overlay').style.display = 'none'; 
-        }
-    };
+                    const data = await response.json();
 
-    // Parallax logic
-    document.addEventListener('mousemove', (e) => { 
-        const x = (window.innerWidth / 2 - e.pageX) / 50; 
-        const y = (window.innerHeight / 2 - e.pageY) / 50; 
-        document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`; 
-    });
+                    if (data.error) throw new Error(data.error);
 
-    // Initialize Tilt
-    VanillaTilt.init(document.querySelectorAll(".card"), { max: 8, speed: 1000, glare: true, "max-glare": 0.2 });
-</script>
+                    // Update UI with AI results
+                    document.getElementById('scan-overlay').style.display = 'none';
+                    document.getElementById('scan-result').classList.remove('hidden');
+                    document.getElementById('res-name').innerText = data.name || "Unknown Item";
+                    document.getElementById('res-grade').innerText = data.grade || "N/A";
+                    document.getElementById('res-value').innerText = data.value || "Calculating...";
+                    document.getElementById('res-lore').innerText = data.lore || "";
+
+                } catch (err) {
+                    console.error("Scan Failed:", err);
+                    document.getElementById('scan-overlay').innerText = "[ CONNECTION_ERROR ]";
+                    setTimeout(() => { document.getElementById('scan-overlay').style.display = 'none'; }, 2000);
+                }
+            }
+        };
+    </script>
 </body>
 </html>
