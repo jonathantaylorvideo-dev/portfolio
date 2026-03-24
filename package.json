@@ -1,17 +1,17 @@
 {
-  "name": "ai-strategy-engine",
+  "name": "visual-vault-2",
   "version": "1.0.0",
-  "description": "AI Systems Architecture & Agentic Workflow Engine",
+  "description": "AI Systems Architecture & Multimodal Ingestion Engine",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "ai",
-    "architecture",
+    "ai-architect",
+    "agentic-workflows",
     "lgs-automation",
-    "fiji-infrastructure"
+    "visual-vault"
   ],
   "author": "Jonathan D. Taylor",
   "license": "ISC",
