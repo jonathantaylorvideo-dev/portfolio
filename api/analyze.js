@@ -1,9 +1,13 @@
-res.setHeader('Access-Control-Allow-Origin', '*');
-res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-if (req.method === 'OPTIONS') return res.status(200).end();
+export default async function handler(req, res) {
+    // 🚨 REQUIRED FOR MOBILE/CROSS-DOMAIN
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') return res.status(200).end();
+    // Handle the browser's "pre-flight" check
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
 
     const { image } = req.body;
     const API_KEY = process.env.GEMINI_API_KEY;
@@ -15,7 +19,7 @@ if (req.method === 'OPTIONS') return res.status(200).end();
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: "Identify this comic or collectible. Perform a visual grade (1-10). Give current market value and a 1-sentence lore snippet. Return ONLY a JSON object: { \"name\": \"...\", \"grade\": \"...\", \"value\": \"...\", \"lore\": \"...\" }" },
+                        { text: "Identify this comic or hobby item. Return JSON: { \"name\": \"...\", \"grade\": \"...\", \"value\": \"...\", \"lore\": \"...\" }" },
                         { inline_data: { mime_type: "image/jpeg", data: image } }
                     ]
                 }]
@@ -23,10 +27,14 @@ if (req.method === 'OPTIONS') return res.status(200).end();
         });
 
         const data = await response.json();
-        // Extract the text from Gemini's response and send it back
-        const aiResponse = JSON.parse(data.candidates[0].content.parts[0].text);
-        res.status(200).json(aiResponse);
+        // Check if Gemini actually returned a result
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+            const aiText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+            res.status(200).json(JSON.parse(aiText));
+        } else {
+            res.status(500).json({ error: "Gemini failed to parse image." });
+        }
     } catch (err) {
-        res.status(500).json({ error: "Vault Offline", details: err.message });
+        res.status(500).json({ error: err.message });
     }
 }
