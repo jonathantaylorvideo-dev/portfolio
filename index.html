@@ -4,114 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jonathan D. Taylor | AI Architect</title>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
-    
     <style>
-        :root { 
-            --primary: #00ffcc; 
-            --card-bg: rgba(5, 12, 12, 0.9); 
-        }
-        
+        :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
         body, html { 
             margin: 0; padding: 0; height: 100vh; width: 100vw;
-            background-color: #000;
-            /* 🏙️ THE ANCHOR: Fixed path to ensure it stays visible */
-            background-image: url('assets/city.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: 110%; /* Slightly larger for parallax "wiggle room" */
-            color: #fff; font-family: 'Segoe UI', sans-serif;
-            overflow: hidden; 
-            transition: background-position 0.1s ease-out; /* Smooths the parallax */
+            background: #000 url('assets/city.png') no-repeat center center fixed;
+            background-size: 110%; color: #fff; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; transition: background-position 0.1s ease-out;
         }
 
-        /* --- 🌫️ ATMOSPHERIC OVERLAY --- */
-        .overlay { 
-            height: 100vh; width: 100vw;
-            display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%);
-            backdrop-filter: saturate(1.2);
-        }
+        .overlay { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%); }
         
         /* --- 🍱 BENTO GRID --- */
-        .bento-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; 
-            width: 90%; 
-            max-width: 1000px;
-        }
-
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 255, 204, 0.25);
-            border-radius: 20px; padding: 30px;
-            transform-style: preserve-3d;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-            transition: border-color 0.3s ease;
-        }
-
-        .card:hover { border-color: var(--primary); }
-
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; }
+        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 20px; padding: 25px; transform-style: preserve-3d; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); }
+        
         .hero { grid-column: span 3; }
-        .hero h1 { 
-            font-size: 3rem; margin: 0; color: var(--primary); 
-            transform: translateZ(50px);
-            text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-        }
+        .hero h1 { font-size: 3rem; margin: 0; color: var(--primary); transform: translateZ(50px); }
+        .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
 
-        .tag { font-family: monospace; color: var(--primary); font-size: 0.8rem; letter-spacing: 1.5px; }
+        /* --- 🖥️ MODAL SYSTEM --- */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #0a1414; border: 1px solid var(--primary); padding: 40px; border-radius: 20px; width: 80%; max-width: 600px; position: relative; }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: var(--primary); cursor: pointer; font-family: monospace; }
 
-        @media (max-width: 850px) { 
-            .bento-grid { grid-template-columns: 1fr; } 
-            .hero { grid-column: span 1; } 
-        }
+        @media (max-width: 850px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
     <div class="overlay">
         <div class="bento-grid">
-            
             <div class="card hero" data-tilt>
                 <span class="tag">[ IDENTITY_LOCKED ]</span>
-                <h1 style="margin-top: 10px;">Jonathan D. Taylor</h1>
-                <p style="opacity: 0.8; font-size: 1.1rem; transform: translateZ(30px);">AI Systems Architect & Agentic Workflow Designer</p>
+                <h1>Jonathan D. Taylor</h1>
+                <p>AI Systems Architect & Agentic Workflow Designer</p>
             </div>
 
-            <div class="card" data-tilt>
-                <h3>System</h3>
-                <p class="tag">ACTIVE_NODE_01</p>
-                <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">St. Louis, MO</p>
+            <div class="card" data-tilt onclick="openModal('Audit')">
+                <h3 style="color:var(--primary)">Strategy Audit</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Initialize LGS/Hobby bottleneck analysis.</p>
             </div>
 
-            <div class="card" data-tilt style="grid-column: span 2;">
-                <h3>Strategy Audit</h3>
-                <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 15px;">Optimize your creative infrastructure.</p>
-                <button style="width:100%; padding:12px; background:var(--primary); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">START_SESSION</button>
+            <div class="card" data-tilt style="grid-column: span 2;" onclick="window.location.href='#portfolio'">
+                <h3>Portfolio</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Case Study: Adventures of Intrigue (Oct-Jan)</p>
             </div>
 
-            <div class="card" data-tilt>
-                <h3>Studio</h3>
-                <p style="font-size: 0.85rem; opacity: 0.8;">Prog-Folk Noir</p>
+            <div class="card" data-tilt onclick="window.location.href='#vault'">
+                <h3>Visual Vault</h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Underwater Videography & Film Noir.</p>
             </div>
 
+            <div class="card" data-tilt onclick="openModal('Terminal')">
+                <h3>Terminal</h3>
+                <p class="tag">VIEW_LOGS</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">[ CLOSE_X ]</span>
+            <div id="modal-body"></div>
         </div>
     </div>
 
 <script>
-    // 3D Tilt for Cards
-    VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 12, speed: 1000, glare: true, "max-glare": 0.4, scale: 1.05
-    });
+    // 🕹️ INTERACTIVITY
+    function openModal(type) {
+        const overlay = document.getElementById('modal-overlay');
+        const body = document.getElementById('modal-body');
+        overlay.style.display = 'flex';
+        
+        if(type === 'Audit') {
+            body.innerHTML = `<h2>Strategy Audit</h2><p>Select Industry:</p><select style="width:100%; padding:10px; background:#111; color:#fff; border:1px solid var(--primary);"><option>Local Game Store</option><option>Multimedia Studio</option></select><button style="margin-top:20px; width:100%; padding:10px; background:var(--primary); color:#000; border:none; font-weight:bold;">RUN_DIAGNOSTIC</button>`;
+        } else {
+            body.innerHTML = `<h2>System Terminal</h2><p>Loading latest architect logs...</p><p style="color:var(--primary); font-family:monospace;">> Fetching "Prog-Folk Noir" theory...<br>> Done.</p>`;
+        }
+    }
 
-    // 🌌 SAFE PARALLAX (Moving the body background directly)
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+
+    // 🌌 PARALLAX & TILT
+    VanillaTilt.init(document.querySelectorAll(".card"), { max: 12, speed: 1000, glare: true, "max-glare": 0.3 });
+
     document.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
-        // Adjust background position slightly from the center
         document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
     });
 </script>
