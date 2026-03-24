@@ -8,14 +8,30 @@
     <style>
         :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
         body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; background: #000 url('assets/city.png') no-repeat center center fixed; background-size: 110%; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        .overlay { position: relative; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); z-index: 5; }
+        
+        .overlay { 
+            position: relative; height: 100vh; width: 100vw; 
+            display: flex; align-items: center; justify-content: center; 
+            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); 
+            z-index: 5; 
+        }
+        
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 10; }
-        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 22px; padding: 30px; transform-style: preserve-3d; cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.3s ease; pointer-events: auto; }
+        
+        .card { 
+            background: var(--card-bg); backdrop-filter: blur(20px); 
+            border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 22px; 
+            padding: 30px; transform-style: preserve-3d; cursor: pointer; 
+            position: relative; overflow: hidden; transition: border-color 0.3s ease; 
+            pointer-events: auto;
+        }
+        
         .card:hover { border-color: var(--primary); }
         .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; mix-blend-mode: screen; filter: grayscale(1); }
         .hero { grid-column: span 3; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
         .hero h1 { font-size: 3.2rem; margin: 0; color: var(--primary); text-shadow: 0 0 20px rgba(0,255,204,0.5); }
         .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
+
         #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 999; align-items: center; justify-content: center; }
         .modal-content { background: #070f0f; border: 1px solid var(--primary); padding: 30px; border-radius: 24px; width: 90%; max-width: 550px; text-align: left; position: relative; }
         .input-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
@@ -30,6 +46,7 @@
     </style>
 </head>
 <body>
+
     <div class="overlay">
         <div class="bento-grid">
             <div class="card hero" data-tilt onclick="ui.open('About')">
@@ -38,12 +55,14 @@
                 <h1>Jonathan D. Taylor</h1>
                 <p>AI Systems Architect & Agentic Workflow Designer</p>
             </div>
+            
             <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>Strategy Audit</h3><p style="font-size:0.8rem; opacity:0.7;">LGS Bottleneck Analysis</p></div>
             <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.8rem; opacity:0.7;">Adventures of Intrigue Case Study</p></div>
             <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.8rem; opacity:0.7;">AI Hobby Scanning Node</p></div>
             <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.8rem; opacity:0.7;">System Logs</p></div>
         </div>
     </div>
+
     <div id="modal-overlay" onclick="ui.close()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="modal-body"></div>
@@ -59,16 +78,14 @@
             if (type === 'Vault') {
                 body.innerHTML = `
                     <h2 style="color:var(--primary); margin-bottom:5px;">Visual Vault</h2>
-                    <p style="font-size:0.8rem; opacity:0.6; margin-bottom:20px;">Multimodal AI Input Node (Gemini 1.5 Pro Enabled)</p>
+                    <p style="font-size:0.8rem; opacity:0.6; margin-bottom:20px;">Multimodal AI Input Node (Gemini 1.5 Pro)</p>
                     <div class="input-tabs">
                         <div class="in-tab active" onclick="ui.switchInTab('camera')">LIVE_CAMERA</div>
                         <div class="in-tab" onclick="ui.switchInTab('upload')">IMAGE_UPLOAD</div>
-                        <div class="in-tab" onclick="ui.switchInTab('voice')">TEXT_VOICE</div>
                     </div>
                     <div id="camera" class="vault-panel active">
                         <div style="background:#000; border:1px solid #333; height:180px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                             <video id="vault-preview" autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
-                            <div id="scan-overlay" style="position:absolute; top:0; left:0; width:100%; height:2px; background:var(--primary); box-shadow:0 0 15px var(--primary); display:none; z-index:10;"></div>
                             <div style="margin-top:15px; display:flex; gap:10px; z-index:2;">
                                 <button class="node-btn" onclick="ui.activateCamera('user')">FRONT_LENS</button>
                                 <button class="node-btn" style="background:var(--primary); color:#000;" onclick="ui.activateCamera('environment')">REAR_LENS</button>
@@ -78,12 +95,8 @@
                     </div>
                     <div id="upload" class="vault-panel">
                         <div style="border:2px dashed #333; height:180px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#555; cursor:pointer;" onclick="document.getElementById('vault-file').click()">
-                            <span style="font-size:0.7rem;">DROP_COLLECTIBLE_ASSET</span>
+                            <span style="font-size:0.7rem;">SELECT_COLLECTIBLE_IMAGE</span>
                         </div>
-                    </div>
-                    <div id="voice" class="vault-panel">
-                        <textarea id="vault-text" placeholder="Identify item..." style="width:100%; height:120px; background:#111; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; font-family:inherit;"></textarea>
-                        <button class="node-btn" style="width:100%; margin-top:10px; padding:10px;" onclick="ui.runRealScan(null)">ANALYZE_TEXT</button>
                     </div>
                     <input type="file" id="vault-file" style="display:none" accept="image/*" onchange="ui.runRealScan(this.files[0])">
                     <div id="vault-results" style="margin-top:20px; display:none; border-top:1px solid #222; padding-top:15px;">
@@ -91,15 +104,23 @@
                         <div id="vault-data-display" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;"></div>
                     </div>`;
             } else if (type === 'About') {
-                body.innerHTML = `<h2 style="color:var(--primary)">Jonathan D. Taylor</h2><p style="font-style: italic; color: var(--primary); font-size: 0.9rem;">AI Systems Architect | Solo Operator</p><p>I build for the <strong>agile small business</strong>—iterating faster and for less than an agency.</p><p style="font-family: monospace; font-size: 0.8rem; background: rgba(0,255,204,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary);">> MISSION_LOG: "Aspiring circumnavigator. Balancing nature and digital architecture."</p>`;
+                body.innerHTML = `
+                    <h2 style="color:var(--primary)">Jonathan D. Taylor</h2>
+                    <p style="font-style: italic; color: var(--primary); font-size: 0.9rem;">AI Systems Architect | 42 | St. Louis</p>
+                    <p>Building agile AI infrastructure for small businesses with the precision of a solo craftsman.</p>
+                    <p style="font-family: monospace; font-size: 0.8rem; background: rgba(0,255,204,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary);">
+                        > MISSION: Circumnavigation. Balancing technical architecture with blue water sailing.
+                    </p>`;
             } else { body.innerHTML = `<h2>Node: ${type}</h2><p>Data stream active.</p>`; }
         },
+
         switchInTab: (tabId) => {
             document.querySelectorAll('.in-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.vault-panel').forEach(v => v.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         },
+
         activateCamera: async (mode) => {
             const video = document.getElementById('vault-preview');
             const snapBtn = document.getElementById('snap-btn');
@@ -107,48 +128,80 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode }, audio: false });
                 video.srcObject = stream;
                 snapBtn.style.display = 'block';
-            } catch (err) { alert("Camera Error: " + err.message); }
+            } catch (err) { alert("Camera Access Error: " + err.message); }
         },
+
+        // CRITICAL FIX: Downscaling image to stay under Vercel payload limits
         captureAndScan: () => {
             const video = document.getElementById('vault-preview');
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const base64 = canvas.toDataURL('image/jpeg').split(',')[1];
+            const maxDim = 1024;
+            const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight));
+            
+            canvas.width = video.videoWidth * scale;
+            canvas.height = video.videoHeight * scale;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
             video.srcObject.getTracks().forEach(track => track.stop());
             ui.runRealScan(null, base64);
         },
+
         runRealScan: async (file, directBase64 = null) => {
             const results = document.getElementById('vault-results');
             const statusText = document.getElementById('scan-status');
             const dataBox = document.getElementById('vault-data-display');
             results.style.display = 'block';
-            statusText.innerText = "[ CONTACTING_GEMINI_API ]...";
+            statusText.innerText = "[ COMPRESSING_&_TRANSMITTING ]...";
+
             try {
-                const base64 = directBase64 || (file ? (await ui.toBase64(file)).split(',')[1] : null);
+                let base64 = directBase64;
+                if (file) {
+                    const bitmap = await createImageBitmap(file);
+                    const canvas = document.createElement('canvas');
+                    const scale = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height));
+                    canvas.width = bitmap.width * scale; canvas.height = bitmap.height * scale;
+                    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+                    base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                }
+
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64, text: document.getElementById('vault-text')?.value })
+                    body: JSON.stringify({ image: base64 })
                 });
-                if (!response.ok) throw new Error(`Status ${response.status}`);
+
+                if (!response.ok) throw new Error(`HTTP_${response.status}`);
                 const data = await response.json();
+
                 statusText.innerText = `[ ANALYSIS_COMPLETE ]: ${data.name || 'Identified'}`;
-                dataBox.innerHTML = `<div style="font-size:0.7rem; color:#888;">GRADE: <span style="color:#fff;">${data.grade || '--'}</span></div><div style="font-size:0.7rem; color:#888;">VAL: <span style="color:#fff;">${data.value || '--'}</span></div><div style="grid-column: span 2; font-size:0.65rem; color:var(--primary); margin-top:5px;">${data.lore || ''}</div>`;
-            } catch (err) { statusText.innerText = `[ ERROR ]: ${err.message}`; }
+                dataBox.innerHTML = `
+                    <div style="font-size:0.7rem; color:#888;">GRADE: <span style="color:#fff;">${data.grade || '--'}</span></div>
+                    <div style="font-size:0.7rem; color:#888;">VALUE: <span style="color:#fff;">${data.value || '--'}</span></div>
+                    <div style="grid-column: span 2; font-size:0.65rem; color:var(--primary); margin-top:5px;">${data.lore || ''}</div>`;
+            } catch (err) { statusText.innerText = `[ SCAN_FAILED ]: ${err.message}`; }
         },
-        toBase64: file => new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e); }),
+
+        toBase64: file => new Promise((resolve, reject) => { 
+            const reader = new FileReader(); reader.readAsDataURL(file); 
+            reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e); 
+        }),
+
         close: () => { 
             const video = document.getElementById('vault-preview');
             if(video && video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
             document.getElementById('modal-overlay').style.display = 'none'; 
         }
     };
+
+    // Parallax logic
     document.addEventListener('mousemove', (e) => { 
         const x = (window.innerWidth / 2 - e.pageX) / 50; 
         const y = (window.innerHeight / 2 - e.pageY) / 50; 
         document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`; 
     });
+
+    // Initialize Tilt
     VanillaTilt.init(document.querySelectorAll(".card"), { max: 8, speed: 1000, glare: true, "max-glare": 0.2 });
 </script>
 </body>
