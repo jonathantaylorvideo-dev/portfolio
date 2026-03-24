@@ -24,7 +24,9 @@
             position: fixed;
             top: -10%; left: -10%;
             width: 120%; height: 120%;
-            background: url('assets/city.png') no-repeat center center;
+            /* 🚨 PATH IS NOW IN THE HTML BODY BELOW FOR STABILITY */
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
             z-index: -5;
             will-change: transform;
@@ -33,14 +35,8 @@
         /* --- 💡 LIGHTING EFFECTS --- */
         .lighting-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.85) 100%);
+            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.8) 100%);
             z-index: -4; pointer-events: none;
-        }
-
-        .neon-glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(0, 255, 204, 0.05) 0%, transparent 50%);
-            z-index: -3; pointer-events: none;
         }
 
         /* --- 🍱 INTERFACE --- */
@@ -61,16 +57,13 @@
             border-radius: 28px; padding: 40px;
             transform-style: preserve-3d;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
-            transition: border-color 0.3s ease;
         }
-
-        .card:hover { border-color: var(--primary); }
 
         .hero { grid-column: span 3; }
         .hero h1 { 
-            font-size: 3.8rem; margin: 0; color: var(--primary); 
-            transform: translateZ(80px); /* Massive 3D pop */
-            text-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+            font-size: 3.5rem; margin: 0; color: var(--primary); 
+            transform: translateZ(60px);
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
         }
 
         .tag { font-family: monospace; color: var(--primary); font-size: 0.8rem; letter-spacing: 2px; }
@@ -80,9 +73,9 @@
 </head>
 <body>
 
-    <div id="parallax-bg"></div>
+    <div id="parallax-bg" style="background-image: url('assets/city.png');"></div>
+    
     <div class="lighting-overlay"></div>
-    <div class="neon-glow"></div>
 
     <div class="wrapper">
         <div class="bento-grid">
@@ -90,48 +83,39 @@
             <div class="card hero" data-tilt>
                 <span class="tag">[ IDENTITY_CONFIRMED ]</span>
                 <h1 style="margin-top: 10px;">Jonathan D. Taylor</h1>
-                <p style="transform: translateZ(40px); opacity: 0.8; font-size: 1.2rem;">AI Systems Architect & Agentic Workflow Designer</p>
+                <p style="opacity: 0.8;">AI Systems Architect & Agentic Workflow Designer</p>
             </div>
 
             <div class="card" data-tilt>
-                <h3>Status</h3>
-                <p class="tag" style="font-size: 1rem;">LIVE_NODE_01</p>
-                <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">St. Louis, MO</p>
+                <h3>System</h3>
+                <p class="tag">LIVE_NODE_01</p>
             </div>
 
             <div class="card" data-tilt style="grid-column: span 2;">
                 <h3>Strategy Audit</h3>
-                <p style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.7;">Ready to optimize your creative backend?</p>
-                <button style="width:100%; padding:15px; background:var(--primary); color:black; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">INITIALIZE_SYSTEM</button>
+                <button style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; cursor:pointer;">INITIALIZE</button>
             </div>
 
             <div class="card" data-tilt>
-                <h3>Creative</h3>
-                <p style="font-size: 0.85rem; opacity: 0.8;">Prog-Folk Noir</p>
-                <p style="font-size: 0.8rem; opacity: 0.5;">Multimedia Studio</p>
+                <h3>Lab</h3>
+                <p style="font-size: 0.8rem; opacity: 0.6;">Prog-Folk Noir</p>
             </div>
 
         </div>
     </div>
 
 <script>
-    // 🕹️ 3D TILT LOGIC
+    // Initialize 3D Tilt
     VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 12, 
-        speed: 1000, 
-        glare: true, 
-        "max-glare": 0.4, 
-        perspective: 1000, 
-        scale: 1.05
+        max: 10, speed: 1000, glare: true, "max-glare": 0.3, scale: 1.05
     });
 
-    // 🌌 PARALLAX MOUSE LOGIC
+    // Parallax logic
     const bg = document.getElementById('parallax-bg');
     document.addEventListener('mousemove', (e) => {
-        // Move background slightly opposite to mouse
-        const moveX = (window.innerWidth / 2 - e.pageX) / 35;
-        const moveY = (window.innerHeight / 2 - e.pageY) / 35;
-        bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        const x = (window.innerWidth / 2 - e.pageX) / 40;
+        const y = (window.innerHeight / 2 - e.pageY) / 40;
+        bg.style.transform = `translate(${x}px, ${y}px)`;
     });
 </script>
 </body>
