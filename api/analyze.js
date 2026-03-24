@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     try {
         const { image } = req.body;
         // In Node 20+, process.env is the standard way to grab your Vercel secret
-        const API_KEY = process.env.GEMINI_API_KEY;
+        const API_KEY = process.env.GOOGLE_API_KEY;
 
         if (!image) return res.status(400).json({ error: "HANDSHAKE_FAIL: No image data." });
         if (!API_KEY) return res.status(500).json({ error: "CONFIG_FAIL: API Key is missing in Vercel." });
