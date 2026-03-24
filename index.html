@@ -4,39 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jonathan D. Taylor | AI Architect</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    
     <style>
-        :root { --primary: #00ffcc; --card-bg: rgba(5, 10, 10, 0.9); }
-        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-
-        /* --- 🌃 EXTERNAL HOSTING (BYPASS GITHUB FOLDER) --- */
-        #city-bg {
-            position: fixed; top: -10%; left: -10%; width: 120%; height: 120%;
-            /* Using a high-speed reliable placeholder first to test */
-            background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=2070') no-repeat center center;
-            background-size: cover; z-index: -5;
+        :root { 
+            --primary: #00ffcc; 
+            --card-bg: rgba(10, 20, 20, 0.9); 
+        }
+        
+        body, html { 
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            background-color: #000; 
+            color: #fff; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; 
         }
 
-        .wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; }
-        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--primary); border-radius: 20px; padding: 30px; transform-style: preserve-3d; }
-        .hero { grid-column: span 3; }
-        h1 { color: var(--primary); font-size: 3rem; margin: 0; transform: translateZ(50px); }
+        /* --- 🌃 CSS-ONLY BACKGROUND (NO JS REQUIRED) --- */
+        .city-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            /* 🚨 RELATIVE PATH TO YOUR ASSETS FOLDER */
+            background: url('assets/city.png') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        /* --- 🍱 STABLE GRID --- */
+        .wrapper { 
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.5); /* Dimmer overlay */
+        }
+        
+        .bento-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); /* Simplified to 2 columns for stability */
+            gap: 20px; 
+            width: 90%; max-width: 800px;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--primary);
+            border-radius: 15px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hero { grid-column: span 2; }
+        h1 { color: var(--primary); margin: 0; font-size: 2.5rem; }
+        p { opacity: 0.8; margin: 10px 0 0 0; }
     </style>
 </head>
 <body>
-    <div id="city-bg"></div>
+
+    <div class="city-background"></div>
+
     <div class="wrapper">
-        <div class="grid">
+        <div class="bento-grid">
+            
             <div class="card hero" data-tilt>
                 <h1>Jonathan D. Taylor</h1>
                 <p>AI Systems Architect</p>
             </div>
-            <div class="card" data-tilt><h3>Status</h3><p style="color:var(--primary)">ONLINE</p></div>
+
+            <div class="card" data-tilt>
+                <h3>System</h3>
+                <p style="color:var(--primary); font-family:monospace;">ONLINE</p>
+            </div>
+
+            <div class="card" data-tilt>
+                <h3>Lab</h3>
+                <p>Prog-Folk Noir</p>
+            </div>
+
         </div>
     </div>
+
     <script>
-        VanillaTilt.init(document.querySelectorAll(".card"), { max: 15, speed: 1000, scale: 1.05 });
+        // Use a try/catch so if one card fails, it doesn't kill the whole page
+        try {
+            VanillaTilt.init(document.querySelectorAll(".card"), {
+                max: 10,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.3
+            });
+        } catch (e) {
+            console.log("Tilt failed, but page should still be visible.");
+        }
     </script>
 </body>
 </html>
