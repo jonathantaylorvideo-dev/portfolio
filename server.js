@@ -5,13 +5,13 @@ const dotenv = require('dotenv');
 dotenv.config();
 const app = express();
 
-// Essential Middleware for Cross-Origin Communication
+// Standard Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 /**
- * 1. RENDER HEARTBEAT
- * Prevents "Deploy Failed" by responding to Render's health checks.
+ * 1. RENDER HEALTH CHECK & HEARTBEAT
+ * This is the critical route that Render pings to verify the service is live.
  */
 app.get('/', (req, res) => {
     res.status(200).send('VISUAL_VAULT_2: SYSTEMS_NOMINAL');
@@ -19,32 +19,32 @@ app.get('/', (req, res) => {
 
 /**
  * 2. INTERACTIVE AI AUDITOR
- * Processes professional chat history and business bottlenecks.
+ * Handles the professional conversation and diagnostic reporting.
  */
 app.post('/api/audit', async (req, res) => {
     const { message, history } = req.body;
     console.log(`[AUDIT_INBOUND]: ${message}`);
 
     try {
-        // Professional Logic Gate
-        let analysisText = "I have noted that friction point. To refine the diagnostic, how is this currently impacting your operational scalability?";
+        let analysisText = "Data received. To refine this architectural diagnostic, how is this bottleneck currently impacting your scalability?";
 
         const input = message.toLowerCase();
         if (input.includes("inventory") || input.includes("stock")) {
-            analysisText = "Manual inventory tracking is a primary source of data rot. I recommend an agentic synchronization layer. Are you using any specific API-enabled POS system currently?";
+            analysisText = "Manual inventory synchronization identified as a high-latency friction point. I recommend an agentic pipeline for real-time tracking. Are you using an API-enabled POS?";
         } else if (input.includes("marketing") || input.includes("social")) {
-            analysisText = "Content deployment latency identified. My 'Hobby Shop Orchestrator' can automate 70% of this pipeline. Shall we map the asset distribution workflow?";
+            analysisText = "Content deployment latency detected. We can automate this workflow via a custom orchestration layer. Shall we map the asset distribution parameters?";
         }
 
         res.json({ status: "SUCCESS", analysis: analysisText });
     } catch (err) {
-        res.status(500).json({ error: "DIAGNOSTIC_INTERRUPTED" });
+        console.error("[ERROR]: Audit Diagnostic Interrupted", err);
+        res.status(500).json({ error: "DIAGNOSTIC_FAILURE" });
     }
 });
 
 /**
  * 3. VISUAL VAULT ANALYZER
- * Handles multimodal data ingestion (Camera & Uploads).
+ * Powers the multimodal scanning for your portfolio's Vault node.
  */
 app.post('/api/analyze', async (req, res) => {
     try {
@@ -59,10 +59,16 @@ app.post('/api/analyze', async (req, res) => {
     }
 });
 
-// Start the Engine
+/**
+ * 4. SERVER BINDING (THE RENDER FIX)
+ * We bind to 0.0.0.0 to ensure Render's load balancer can find the service.
+ */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`-----------------------------------------`);
-    console.log(`VISUAL_VAULT_2: UPLINK ESTABLISHED [PORT ${PORT}]`);
+    console.log(`VISUAL_VAULT_2: UPLINK ESTABLISHED`);
+    console.log(`BINDING_TO_PORT: ${PORT}`);
+    console.log(`SYSTEMS_READY: TRUE`);
     console.log(`-----------------------------------------`);
 });
