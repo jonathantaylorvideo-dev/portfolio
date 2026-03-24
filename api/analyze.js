@@ -10,22 +10,22 @@ export default async function handler(req, res) {
   try {
     const { image } = req.body;
     
-    // Check for the key using the EXACT name from your Vercel Screenshot
+    // Using the EXACT name confirmed in your Vercel Dashboard screenshot
     const API_KEY = process.env.GOOGLE_API_KEY;
 
     if (!image) return res.status(400).json({ error: "HANDSHAKE_FAIL: No image data." });
     if (!API_KEY) return res.status(500).json({ error: "CONFIG_FAIL: API Key is missing in Vercel." });
 
-    // 2. Execute Gemini Request
+    // 2. Execute Gemini Request (Updated to stable v1 endpoint)
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{
             parts: [
-              { text: "Identify this hobby collectible. Return ONLY a raw JSON object with these keys: name, grade, value, lore. No markdown formatting." },
+              { text: "Identify this hobby collectible (card, comic, or toy). Return ONLY a raw JSON object with these keys: 'name', 'grade', 'value', 'lore'. No markdown formatting or extra text." },
               { inline_data: { mime_type: "image/jpeg", data: image } }
             ]
           }]
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 
     const result = await response.json();
 
-    // 3. Structural Validation
+    // 3. Structural Validation & Error Handling for the 404/403/500 Gemini responses
     if (!result.candidates || !result.candidates[0].content) {
       console.error("Gemini Error Payload:", JSON.stringify(result));
       throw new Error(result.error?.message || "AI_ENGINE_REJECTION");
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     // 4. The Sanitizer: Strip out any ```json or ``` marks if the AI includes them
     const cleanText = rawText.replace(/```json|```/g, "").trim();
     
-    // 5. Final Output
+    // 5. Final Output to your front-end
     res.status(200).json(JSON.parse(cleanText));
 
   } catch (err) {
