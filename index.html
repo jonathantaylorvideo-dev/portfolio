@@ -8,18 +8,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     
     <style>
-        /* --- 🎨 THEME VARIABLES --- */
         :root { 
             --primary: #00ffcc; 
             --bg: #050505; 
-            /* Translucency is key for the 'Snap' depth feel */
-            --card: rgba(15, 15, 15, 0.45); 
+            --card: rgba(10, 10, 10, 0.5); /* 50% transparent to see video */
             --text: #ffffff; 
         }
         
         body, html { 
             margin: 0; padding: 0; height: 100%; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             background: var(--bg); color: var(--text);
             overflow-x: hidden;
         }
@@ -27,74 +25,56 @@
         /* --- LAYER 1: 🎥 VIDEO BACKGROUND --- */
         .video-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -2; overflow: hidden; background: #000;
+            z-index: -2; overflow: hidden; 
+            background: #0a1a1a; /* DEBUG COLOR: If you see dark teal, the video path is the issue */
         }
         .video-background video {
             min-width: 100%; min-height: 100%;
             object-fit: cover; opacity: 0.5; 
-            filter: grayscale(100%) contrast(110%) brightness(0.8);
+            filter: grayscale(100%) contrast(110%);
         }
 
-        /* --- LAYER 2: 📺 THE SCANLINE OVERLAY --- */
+        /* --- LAYER 2: 📺 SCANLINES --- */
         .video-background::after {
             content: "";
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
             background-size: 100% 4px, 3px 100%;
             pointer-events: none; z-index: -1; 
         }
 
-        /* --- LAYER 3: 🍱 THE UI BENTO GRID --- */
-        .wrapper { 
-            position: relative; z-index: 10; 
-            max-width: 1200px; margin: 0 auto; padding: 60px 20px; 
-            box-sizing: border-box; 
-        }
-        
+        /* --- LAYER 3: UI --- */
+        .wrapper { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
 
         .card { 
-            position: relative;
             background: var(--card); 
-            backdrop-filter: blur(15px); /* Premium frosted glass look */
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px; 
-            padding: 35px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px; padding: 35px;
             transform-style: preserve-3d;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8);
             transition: border-color 0.3s ease, box-shadow 0.4s ease;
         }
 
-        /* 🚀 THE OVERLAP & LIFT LOGIC */
-        .card:hover { 
-            border-color: var(--primary); 
-            z-index: 50; 
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9); 
-        }
+        .card:hover { border-color: var(--primary); z-index: 50; box-shadow: 0 40px 100px rgba(0, 0, 0, 1); }
 
-        .hero-card { grid-column: span 3; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
-        .hero-card h1 { 
-            font-size: 3.5rem; margin: 0; color: var(--primary); 
-            text-transform: uppercase; letter-spacing: -2px;
-            transform: translateZ(70px); /* Massive depth pop */
-            text-shadow: 0 15px 30px rgba(0,0,0,0.8);
-        }
-        .hero-card p { transform: translateZ(40px); opacity: 0.9; font-weight: 300; }
+        .hero-card { grid-column: span 3; cursor: pointer; }
+        .hero-card h1 { font-size: 3.5rem; margin: 0; color: var(--primary); text-transform: uppercase; transform: translateZ(60px); }
+        .hero-card p { transform: translateZ(30px); opacity: 0.9; }
 
-        .audit-card { grid-column: span 2; border: 1px solid var(--primary); background: rgba(0, 255, 204, 0.02); }
+        .audit-card { grid-column: span 2; border: 1px solid var(--primary); }
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; background: #333; }
         .online-dot { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
 
-        /* --- MODALS --- */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(25px); justify-content: center; align-items: center; }
-        .modal-content { background: #0a0a0a; width: 90%; max-width: 750px; padding: 50px; border-radius: 32px; border: 1px solid #222; position: relative; }
-        .close-btn { position: absolute; top: 25px; right: 35px; font-size: 32px; color: #666; cursor: pointer; }
+        /* MODALS */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); justify-content: center; align-items: center; }
+        .modal-content { background: #111; width: 90%; max-width: 700px; padding: 40px; border-radius: 24px; border: 1px solid #333; position: relative; }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 30px; color: #666; cursor: pointer; }
 
-        /* --- INPUTS --- */
-        input, select, textarea { width: 100%; padding: 14px; background: #111; border: 1px solid #333; color: white; border-radius: 12px; margin-top: 12px; font-size: 1rem; }
-        button { width: 100%; padding: 18px; margin-top: 25px; background: var(--primary); color: #000; font-weight: 800; border: none; border-radius: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; margin-top: 10px; }
+        button { width: 100%; padding: 15px; margin-top: 20px; background: var(--primary); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
 
         @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero-card, .audit-card { grid-column: span 1; } }
     </style>
@@ -103,54 +83,46 @@
 
     <div class="video-background">
         <video id="bgVideo" autoplay muted loop playsinline>
-            <source src="assets/hero-loop.webm" type="video/webm">
-            <source src="assets/your-background-video.mp4" type="video/mp4">
+            <source src="./assets/hero-loop.webm" type="video/webm">
+            <p>Your browser does not support the video tag.</p>
         </video>
     </div>
 
     <div class="wrapper">
         <div class="bento-grid">
-            
             <div class="card hero-card" onclick="openModal('about-modal')">
                 <h1>Jonathan D. Taylor</h1>
                 <p>AI Systems Architect & Agentic Workflow Designer</p>
-                <small style="color: var(--primary); font-weight: 600;">[ INITIALIZE ARCHITECT_PROFILE ]</small>
+                <small style="color: var(--primary)">[ INITIALIZE PROFILE ]</small>
             </div>
 
             <div class="card">
                 <h3>Node Status</h3>
-                <div id="status-container">
-                    <span id="status-dot" class="status-dot"></span>
-                    <span id="status-text" style="font-size: 0.95rem; font-family: monospace;">HANDSHAKING...</span>
-                </div>
+                <div id="status-dot" class="status-dot"></div>
+                <span id="status-text">HANDSHAKING...</span>
             </div>
 
             <div class="card audit-card">
                 <h3>⚡ Strategy Audit</h3>
                 <form id="auditForm">
                     <input type="text" id="bizName" placeholder="Business Name" required>
-                    <select id="industry">
-                        <option value="LGS">Local Game Store / Retail</option>
-                        <option value="Creative">Creative / Multimedia</option>
-                    </select>
-                    <textarea id="bottleneck" placeholder="Describe your primary workflow bottleneck..." rows="3" required></textarea>
-                    <button type="submit" id="submitBtn" disabled>Run System Audit</button>
+                    <textarea id="bottleneck" placeholder="Bottleneck" rows="2" required></textarea>
+                    <button type="submit" id="submitBtn" disabled>Run Audit</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Creative Engine</h3>
-                <p>Uke Gothic & Prog-Folk Noir. AI-driven storytelling.</p>
+                <p>Uke Gothic & Prog-Folk Noir.</p>
             </div>
-
         </div>
     </div>
 
     <div id="about-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('about-modal')">&times;</span>
-            <h2 style="color: var(--primary)">Architect Profile</h2>
-            <p>Bridging the gap between complex systems and creative storytelling.</p>
+            <h2>Architect Profile</h2>
+            <p>Multimedia systems and AI agentic workflows.</p>
         </div>
     </div>
 
@@ -166,29 +138,21 @@
 
     const haptic = {
         click: () => { if (navigator.vibrate) navigator.vibrate(12); },
-        success: () => { if (navigator.vibrate) navigator.vibrate([30, 60, 30]); },
-        error: () => { if (navigator.vibrate) navigator.vibrate(250); }
+        success: () => { if (navigator.vibrate) navigator.vibrate([30, 60, 30]); }
     };
 
-    // 🕹️ MARVEL SNAP CARD PHYSICS
     VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 12, speed: 800, glare: true, "max-glare": 0.4, perspective: 1200, gyroscope: true, scale: 1.04
+        max: 12, speed: 800, glare: true, "max-glare": 0.4, perspective: 1200, scale: 1.04
     });
 
-    // 🎥 FORCE VIDEO PLAYBACK
-    window.addEventListener('load', () => {
-        const video = document.getElementById('bgVideo');
-        if (video) {
-            video.play().catch(() => {
-                // If autoplay is blocked, play on first interaction
-                document.body.addEventListener('click', () => video.play(), { once: true });
-            });
-        }
-    });
+    // 🎥 FORCED PLAYBACK START
+    const video = document.getElementById('bgVideo');
+    const startVideo = () => { video.play().catch(() => {}); };
+    window.addEventListener('load', startVideo);
+    document.body.addEventListener('click', startVideo, { once: true });
 
     function openModal(id) { haptic.click(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; }
 
     async function checkConnection() {
         const dot = document.getElementById('status-dot');
@@ -201,7 +165,7 @@
                 text.innerText = "NODE ONLINE";
                 btn.disabled = false;
             }
-        } catch (err) { text.innerText = "WAITING FOR NODE..."; }
+        } catch (err) { text.innerText = "WAITING..."; }
     }
 
     document.getElementById('auditForm').addEventListener('submit', async (e) => {
@@ -209,27 +173,24 @@
         haptic.click();
         const btn = document.getElementById('submitBtn');
         btn.innerText = "ANALYZING...";
-        
         try {
             const res = await fetch(`${API_BASE}/api/generate-audit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     businessName: document.getElementById('bizName').value,
-                    industry: document.getElementById('industry').value,
                     bottleneck: document.getElementById('bottleneck').value
                 })
             });
             const data = await res.json();
             haptic.success();
-            document.getElementById('audit-text-content').innerHTML = `<h2 style="color:var(--primary)">Audit Complete</h2>` + data.audit;
+            document.getElementById('audit-text-content').innerHTML = `<h2>Audit Results</h2>` + data.audit;
             openModal('audit-result-modal');
-        } catch (error) { haptic.error(); alert("System Timeout."); }
-        finally { btn.innerText = "Run System Audit"; }
+        } catch (error) { alert("Timeout."); }
+        finally { btn.innerText = "Run Audit"; }
     });
 
     checkConnection();
-    setInterval(checkConnection, 30000);
 </script>
 </body>
 </html>
