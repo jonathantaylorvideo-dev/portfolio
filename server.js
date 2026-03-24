@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const axios = require('axios');
 
 dotenv.config();
 const app = express();
@@ -10,29 +11,44 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 /**
- * 1. RENDER HEALTH CHECK & HEARTBEAT
- * This is the critical route that Render pings to verify the service is live.
+ * 1. RENDER HEALTH CHECK
  */
 app.get('/', (req, res) => {
-    res.status(200).send('VISUAL_VAULT_2: SYSTEMS_NOMINAL');
+    res.status(200).send('AI_STRATEGY_ENGINE: ONLINE [STATUS_CODE: 200]');
 });
 
 /**
- * 2. INTERACTIVE AI AUDITOR
- * Handles the professional conversation and diagnostic reporting.
+ * 2. INTERACTIVE AI AUDITOR (5-6 STAGE DISCOVERY)
  */
 app.post('/api/audit', async (req, res) => {
     const { message, history } = req.body;
-    console.log(`[AUDIT_INBOUND]: ${message}`);
+    
+    // Calculate progress based on the number of previous bot messages
+    const questionCount = history.filter(m => m.role === 'bot').length;
 
     try {
-        let analysisText = "Data received. To refine this architectural diagnostic, how is this bottleneck currently impacting your scalability?";
+        let analysisText = "";
 
-        const input = message.toLowerCase();
-        if (input.includes("inventory") || input.includes("stock")) {
-            analysisText = "Manual inventory synchronization identified as a high-latency friction point. I recommend an agentic pipeline for real-time tracking. Are you using an API-enabled POS?";
-        } else if (input.includes("marketing") || input.includes("social")) {
-            analysisText = "Content deployment latency detected. We can automate this workflow via a custom orchestration layer. Shall we map the asset distribution parameters?";
+        // Diagnostic Tree Logic
+        switch(questionCount) {
+            case 1:
+                analysisText = "Understood. To assess the scale of this friction, approximately how many manual hours per week are currently lost to this specific process?";
+                break;
+            case 2:
+                analysisText = "Data logged. Regarding your current technical stack—are you operating on a legacy system, or is there an existing API (like Shopify, Square, or a custom DB) we can hook into?";
+                break;
+            case 3:
+                analysisText = "Analysis progressing. If we were to automate this, would the priority be 'Real-Time Accuracy' or 'Bulk Processing Speed'?";
+                break;
+            case 4:
+                analysisText = "Almost complete. What is the single biggest 'fail-point' in your current setup? (e.g., human error, slow hardware, or fragmented data?)";
+                break;
+            case 5:
+                analysisText = "Final diagnostic parameter: What is your ideal 'End State' for this workflow—complete hands-off automation, or a human-in-the-loop dashboard?";
+                break;
+            default:
+                // This triggers once the 5-question cycle is complete
+                analysisText = "Diagnostic complete. I have mapped your architectural requirements. Please click [ GENERATE_FULL_AUDIT ] to view the optimized deployment strategy.";
         }
 
         res.json({ status: "SUCCESS", analysis: analysisText });
@@ -44,7 +60,6 @@ app.post('/api/audit', async (req, res) => {
 
 /**
  * 3. VISUAL VAULT ANALYZER
- * Powers the multimodal scanning for your portfolio's Vault node.
  */
 app.post('/api/analyze', async (req, res) => {
     try {
@@ -61,14 +76,27 @@ app.post('/api/analyze', async (req, res) => {
 
 /**
  * 4. SERVER BINDING (THE RENDER FIX)
- * We bind to 0.0.0.0 to ensure Render's load balancer can find the service.
  */
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`-----------------------------------------`);
-    console.log(`VISUAL_VAULT_2: UPLINK ESTABLISHED`);
+    console.log(`AI_STRATEGY_ENGINE: UPLINK ESTABLISHED`);
     console.log(`BINDING_TO_PORT: ${PORT}`);
-    console.log(`SYSTEMS_READY: TRUE`);
     console.log(`-----------------------------------------`);
 });
+
+/**
+ * 5. STAY_AWAKE PROTOCOL
+ * Prevents Render Free Tier from spinning down by pinging itself every 14 minutes.
+ */
+const PING_INTERVAL = 14 * 60 * 1000; 
+const SELF_URL = 'https://ai-strategy-engine.onrender.com';
+
+setInterval(async () => {
+    try {
+        await axios.get(SELF_URL);
+        console.log(`[SYSTEM_MAINTENANCE]: Self-ping successful. Engine active.`);
+    } catch (err) {
+        console.error("[SYSTEM_ERROR]: Self-ping failed.");
+    }
+}, PING_INTERVAL);
