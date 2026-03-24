@@ -1,7 +1,7 @@
 {
-  "name": "visual-vault-2",
-  "version": "1.0.0",
-  "description": "AI Systems Architecture & Multimodal Ingestion Engine",
+  "name": "ai-strategy-engine",
+  "version": "1.1.0",
+  "description": "AI Systems Architecture & Professional Audit Node",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,15 +10,16 @@
   "keywords": [
     "ai-architect",
     "agentic-workflows",
-    "lgs-automation",
-    "visual-vault"
+    "bento-portfolio",
+    "stay-awake"
   ],
   "author": "Jonathan D. Taylor",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.0"
   },
   "engines": {
     "node": ">=18.0.0"
