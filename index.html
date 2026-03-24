@@ -14,86 +14,116 @@
             overflow: hidden; transition: background-position 0.1s ease-out;
         }
 
-        .overlay { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%); }
+        .overlay { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.9) 100%); }
         
-        /* --- 🍱 BENTO GRID --- */
-        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; }
-        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 20px; padding: 25px; transform-style: preserve-3d; cursor: pointer; transition: 0.3s; }
-        .card:hover { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); }
+        /* --- 🍱 5-BOX BENTO GRID --- */
+        .bento-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            grid-template-rows: auto auto;
+            gap: 20px; 
+            width: 90%; 
+            max-width: 1100px; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(25px); 
+            border: 1px solid rgba(0, 255, 204, 0.2); 
+            border-radius: 22px; 
+            padding: 30px; 
+            transform-style: preserve-3d; 
+            cursor: pointer; 
+            transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+
+        .card:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(0, 255, 204, 0.15); }
         
+        /* Layout Logic */
         .hero { grid-column: span 3; }
-        .hero h1 { font-size: 3rem; margin: 0; color: var(--primary); transform: translateZ(50px); }
-        .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
+        .audit { grid-column: span 1; }
+        .portfolio { grid-column: span 2; }
+        .vault { grid-column: span 1; }
+        .terminal { grid-column: span 1; }
 
-        /* --- 🖥️ MODAL SYSTEM --- */
-        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { background: #0a1414; border: 1px solid var(--primary); padding: 40px; border-radius: 20px; width: 80%; max-width: 600px; position: relative; }
-        .close-btn { position: absolute; top: 20px; right: 20px; color: var(--primary); cursor: pointer; font-family: monospace; }
+        h1 { font-size: 3.2rem; margin: 0; color: var(--primary); transform: translateZ(50px); }
+        h3 { margin: 0 0 10px 0; font-size: 1.2rem; }
+        p { font-size: 0.85rem; opacity: 0.7; margin: 0; line-height: 1.4; }
+        .tag { font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; display: block; margin-bottom: 5px; }
 
-        @media (max-width: 850px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
+        /* --- 🖥️ MODAL --- */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .modal-content { background: #070f0f; border: 1px solid var(--primary); padding: 40px; border-radius: 24px; width: 85%; max-width: 550px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,1); }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: var(--primary); cursor: pointer; font-family: monospace; font-weight: bold; }
+
+        @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero, .portfolio, .audit, .vault, .terminal { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
     <div class="overlay">
         <div class="bento-grid">
+            
             <div class="card hero" data-tilt>
-                <span class="tag">[ IDENTITY_LOCKED ]</span>
+                <span class="tag">[ IDENTITY_CONFIRMED ]</span>
                 <h1>Jonathan D. Taylor</h1>
-                <p>AI Systems Architect & Agentic Workflow Designer</p>
+                <p style="font-size: 1.2rem; transform: translateZ(30px);">AI Systems Architect & Agentic Workflow Designer</p>
             </div>
 
-            <div class="card" data-tilt onclick="openModal('Audit')">
-                <h3 style="color:var(--primary)">Strategy Audit</h3>
-                <p style="font-size: 0.8rem; opacity: 0.7;">Initialize LGS/Hobby bottleneck analysis.</p>
+            <div class="card audit" data-tilt onclick="openModal('Audit')">
+                <span class="tag">01_AUDIT</span>
+                <h3>Strategy Audit</h3>
+                <p>Initialize LGS/Hobby bottleneck analysis.</p>
             </div>
 
-            <div class="card" data-tilt style="grid-column: span 2;" onclick="window.location.href='#portfolio'">
-                <h3>Portfolio</h3>
-                <p style="font-size: 0.8rem; opacity: 0.7;">Case Study: Adventures of Intrigue (Oct-Jan)</p>
+            <div class="card portfolio" data-tilt onclick="window.location.href='#portfolio'">
+                <span class="tag">02_WORK</span>
+                <h3>Professional Portfolio</h3>
+                <p>Case Studies: Adventures of Intrigue & AI Automation deployments.</p>
             </div>
 
-            <div class="card" data-tilt onclick="window.location.href='#vault'">
+            <div class="card vault" data-tilt onclick="window.location.href='#vault'">
+                <span class="tag">03_MEDIA</span>
                 <h3>Visual Vault</h3>
-                <p style="font-size: 0.8rem; opacity: 0.7;">Underwater Videography & Film Noir.</p>
+                <p>Film Noir & Underwater Videography.</p>
             </div>
 
-            <div class="card" data-tilt onclick="openModal('Terminal')">
+            <div class="card terminal" data-tilt onclick="openModal('Terminal')">
+                <span class="tag">04_LOGS</span>
                 <h3>Terminal</h3>
-                <p class="tag">VIEW_LOGS</p>
+                <p>System updates & Architect logs.</p>
             </div>
+
         </div>
     </div>
 
     <div id="modal-overlay">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">[ CLOSE_X ]</span>
+            <span class="close-btn" onclick="closeModal()">[ X_CLOSE ]</span>
             <div id="modal-body"></div>
         </div>
     </div>
 
 <script>
-    // 🕹️ INTERACTIVITY
     function openModal(type) {
         const overlay = document.getElementById('modal-overlay');
         const body = document.getElementById('modal-body');
         overlay.style.display = 'flex';
         
         if(type === 'Audit') {
-            body.innerHTML = `<h2>Strategy Audit</h2><p>Select Industry:</p><select style="width:100%; padding:10px; background:#111; color:#fff; border:1px solid var(--primary);"><option>Local Game Store</option><option>Multimedia Studio</option></select><button style="margin-top:20px; width:100%; padding:10px; background:var(--primary); color:#000; border:none; font-weight:bold;">RUN_DIAGNOSTIC</button>`;
+            body.innerHTML = `<h2 style="color:var(--primary)">Strategy Audit</h2><p>Select Target Industry:</p><select style="width:100%; margin:15px 0; padding:12px; background:#111; color:#fff; border:1px solid var(--primary); border-radius:8px;"><option>Local Game Store / Tabletop</option><option>Multimedia Studio</option><option>E-Commerce / Retail</option></select><button style="width:100%; padding:15px; background:var(--primary); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">RUN_DIAGNOSTIC</button>`;
         } else {
-            body.innerHTML = `<h2>System Terminal</h2><p>Loading latest architect logs...</p><p style="color:var(--primary); font-family:monospace;">> Fetching "Prog-Folk Noir" theory...<br>> Done.</p>`;
+            body.innerHTML = `<h2 style="color:var(--primary)">System Terminal</h2><p style="font-family:monospace; font-size:0.9rem;">> Fetching logs...<br>> Status: CONNECTED<br>> Last Entry: Prog-Folk Noir deployment successful.<br>> <span style="color:var(--primary)">_</span></p>`;
         }
     }
 
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
-    // 🌌 PARALLAX & TILT
-    VanillaTilt.init(document.querySelectorAll(".card"), { max: 12, speed: 1000, glare: true, "max-glare": 0.3 });
+    VanillaTilt.init(document.querySelectorAll(".card"), { max: 10, speed: 800, glare: true, "max-glare": 0.3, scale: 1.03 });
 
     document.addEventListener('mousemove', (e) => {
-        const x = (window.innerWidth / 2 - e.pageX) / 50;
-        const y = (window.innerHeight / 2 - e.pageY) / 50;
+        const x = (window.innerWidth / 2 - e.pageX) / 45;
+        const y = (window.innerHeight / 2 - e.pageY) / 45;
         document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
     });
 </script>
