@@ -8,79 +8,112 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     
     <style>
-        :root { --primary: #00ffcc; --card-bg: rgba(5, 12, 12, 0.9); }
+        :root { 
+            --primary: #00ffcc; 
+            --card-bg: rgba(5, 12, 12, 0.9); 
+        }
         
         body, html { 
             margin: 0; padding: 0; height: 100vh; width: 100vw;
             background-color: #000;
-            /* 🏙️ DIRECT PATH - NO LAYERS */
+            /* 🏙️ THE ANCHOR: Fixed path to ensure it stays visible */
             background-image: url('assets/city.png');
             background-repeat: no-repeat;
             background-position: center center;
-            background-size: cover;
-            background-attachment: fixed;
+            background-size: 110%; /* Slightly larger for parallax "wiggle room" */
             color: #fff; font-family: 'Segoe UI', sans-serif;
             overflow: hidden; 
+            transition: background-position 0.1s ease-out; /* Smooths the parallax */
         }
 
-        .wrapper { 
+        /* --- 🌫️ ATMOSPHERIC OVERLAY --- */
+        .overlay { 
             height: 100vh; width: 100vw;
             display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.6); /* This ensures the text is readable */
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%);
+            backdrop-filter: saturate(1.2);
         }
         
+        /* --- 🍱 BENTO GRID --- */
         .bento-grid { 
-            display: grid; grid-template-columns: repeat(2, 1fr); 
-            gap: 25px; width: 90%; max-width: 800px;
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            width: 90%; 
+            max-width: 1000px;
         }
 
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 255, 204, 0.3);
-            border-radius: 20px; padding: 35px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 204, 0.25);
+            border-radius: 20px; padding: 30px;
             transform-style: preserve-3d;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            transition: border-color 0.3s ease;
         }
 
-        .hero { grid-column: span 2; }
-        h1 { font-size: 3rem; margin: 0; color: var(--primary); }
-        .tag { font-family: monospace; color: var(--primary); font-size: 0.8rem; }
+        .card:hover { border-color: var(--primary); }
 
-        @media (max-width: 600px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
+        .hero { grid-column: span 3; }
+        .hero h1 { 
+            font-size: 3rem; margin: 0; color: var(--primary); 
+            transform: translateZ(50px);
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+
+        .tag { font-family: monospace; color: var(--primary); font-size: 0.8rem; letter-spacing: 1.5px; }
+
+        @media (max-width: 850px) { 
+            .bento-grid { grid-template-columns: 1fr; } 
+            .hero { grid-column: span 1; } 
+        }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
+    <div class="overlay">
         <div class="bento-grid">
             
             <div class="card hero" data-tilt>
                 <span class="tag">[ IDENTITY_LOCKED ]</span>
                 <h1 style="margin-top: 10px;">Jonathan D. Taylor</h1>
-                <p style="opacity: 0.8; font-size: 1.1rem;">AI Systems Architect & Workflow Designer</p>
+                <p style="opacity: 0.8; font-size: 1.1rem; transform: translateZ(30px);">AI Systems Architect & Agentic Workflow Designer</p>
             </div>
 
             <div class="card" data-tilt>
-                <h3>System Status</h3>
+                <h3>System</h3>
                 <p class="tag">ACTIVE_NODE_01</p>
+                <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">St. Louis, MO</p>
+            </div>
+
+            <div class="card" data-tilt style="grid-column: span 2;">
+                <h3>Strategy Audit</h3>
+                <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 15px;">Optimize your creative infrastructure.</p>
+                <button style="width:100%; padding:12px; background:var(--primary); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">START_SESSION</button>
             </div>
 
             <div class="card" data-tilt>
-                <h3>Creative Lab</h3>
-                <p style="font-size: 0.9rem; opacity: 0.8;">Prog-Folk Noir</p>
+                <h3>Studio</h3>
+                <p style="font-size: 0.85rem; opacity: 0.8;">Prog-Folk Noir</p>
             </div>
 
         </div>
     </div>
 
 <script>
-    // Only run if the library loaded correctly
-    if (window.VanillaTilt) {
-        VanillaTilt.init(document.querySelectorAll(".card"), {
-            max: 10, speed: 400, glare: true, "max-glare": 0.3
-        });
-    }
+    // 3D Tilt for Cards
+    VanillaTilt.init(document.querySelectorAll(".card"), {
+        max: 12, speed: 1000, glare: true, "max-glare": 0.4, scale: 1.05
+    });
+
+    // 🌌 SAFE PARALLAX (Moving the body background directly)
+    document.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 50;
+        const y = (window.innerHeight / 2 - e.pageY) / 50;
+        // Adjust background position slightly from the center
+        document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+    });
 </script>
 </body>
 </html>
