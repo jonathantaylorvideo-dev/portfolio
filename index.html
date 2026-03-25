@@ -6,48 +6,25 @@
     <title>Jonathan D. Taylor | AI Architect</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <style>
-        :root { 
-            --primary: #00cca3; 
-            --snap-pink: #bc005e; 
-            --card-bg: rgba(7, 10, 10, 0.92); 
-        }
-        
-        body, html { 
-            margin: 0; padding: 0; min-height: 100vh; width: 100vw; 
-            background: #000 url('assets/city.png') no-repeat center center fixed; 
-            background-size: cover; color: #d1d1d1; font-family: 'Segoe UI', sans-serif; 
-            overflow-x: hidden; 
-        }
-        
+        :root { --primary: #00cca3; --snap-pink: #bc005e; --card-bg: rgba(7, 10, 10, 0.92); }
+        body, html { margin: 0; padding: 0; min-height: 100vh; width: 100vw; background: #000 url('assets/city.png') no-repeat center center fixed; background-size: cover; color: #d1d1d1; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .overlay { position: relative; min-height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.85) 100%); z-index: 10; }
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 20; }
-        
-        .card { 
-            background: var(--card-bg); backdrop-filter: blur(25px); 
-            border: 1px solid rgba(0, 204, 163, 0.1); border-radius: 22px; 
-            padding: 30px; transform-style: preserve-3d; cursor: pointer; 
-            position: relative; overflow: hidden; transition: all 0.4s ease; 
-        }
-        
+        .card { background: var(--card-bg); backdrop-filter: blur(25px); border: 1px solid rgba(0, 204, 163, 0.1); border-radius: 22px; padding: 30px; transform-style: preserve-3d; cursor: pointer; position: relative; overflow: hidden; transition: all 0.4s ease; }
         .card:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(0, 204, 163, 0.15); }
         .hero { grid-column: span 3; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
         .hero h1 { font-size: 3.2rem; margin: 0; color: var(--primary); text-shadow: 0 0 15px rgba(0,204,163,0.3); }
         .tag { font-family: monospace; color: var(--primary); font-size: 0.65rem; letter-spacing: 3px; opacity: 0.8; }
-
         #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); display: none; z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: #050808; border: 1px solid rgba(0,204,163,0.2); padding: 35px; border-radius: 28px; width: 95%; max-width: 600px; position: relative; }
-        
         .node-btn { padding: 10px 20px; background: transparent; border: 1px solid var(--primary); color: var(--primary); font-family: monospace; font-size: 0.6rem; cursor: pointer; border-radius: 4px; transition: 0.3s; }
         .node-btn:hover { background: rgba(0,204,163,0.1); }
-        
         input[type="text"] { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid #222; color: #fff; border-radius: 8px; font-family: monospace; font-size: 0.8rem; outline: none; box-sizing: border-box; }
-
-        #audit-chat-window { height: 250px; overflow-y: auto; margin-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; padding-right: 10px; }
+        #audit-chat-window { height: 250px; overflow-y: auto; margin-bottom: 20px; padding-right: 10px; }
         .msg { margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; opacity: 0; animation: fadeIn 0.5s forwards; }
         .msg.bot { color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; }
         .msg.user { color: #fff; text-align: right; opacity: 0.7; font-family: monospace; }
         @keyframes fadeIn { to { opacity: 1; } }
-
         @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
     </style>
 </head>
@@ -65,7 +42,7 @@
                 <p style="opacity: 0.7;">AI Systems Architect & Agentic Workflow Designer</p>
             </div>
             <div class="card" data-tilt onclick="ui.open('Audit')"><span class="tag">01_AUDIT</span><h3>AI Auditor</h3><p style="font-size:0.75rem; opacity:0.5;">Interactive Discovery</p></div>
-            <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.75rem; opacity:0.5;">Adventures of Intrigue</p></div>
+            <div class="card" data-tilt style="grid-column: span 2;" onclick="ui.open('Work')"><span class="tag">02_WORK</span><h3>Portfolio</h3><p style="font-size:0.75rem; opacity:0.5;">Digital Strategy</p></div>
             <div class="card" data-tilt onclick="ui.open('Vault')"><span class="tag">03_VAULT</span><h3>Visual Vault</h3><p style="font-size:0.75rem; opacity:0.5;">Multimodal Node</p></div>
             <div class="card" data-tilt onclick="ui.open('Terminal')"><span class="tag">04_LOGS</span><h3>Terminal</h3><p style="font-size:0.75rem; opacity:0.5;">System Events</p></div>
         </div>
@@ -83,23 +60,22 @@
 
     const ui = {
         matrixInterval: null,
-        auditHistory: [],
+        auditHistory: [], // THE BRAIN: Stores every message to track progress
 
         open: (type) => {
             const body = document.getElementById('modal-body');
             document.getElementById('modal-overlay').style.display = 'flex';
             
             if (type === 'Audit') {
+                ui.auditHistory = []; // Reset history for a fresh diagnostic
                 body.innerHTML = `
-                    <div style="position:relative; min-height:480px; overflow:hidden; background:#000; border-radius:12px; padding:25px; border:1px solid rgba(0,204,163,0.3);">
+                    <div style="position:relative; min-height:480px; background:#000; border-radius:12px; padding:25px; border:1px solid rgba(0,204,163,0.3);">
                         <canvas id="matrix-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.12; z-index:1; pointer-events:none;"></canvas>
                         <div style="position:relative; z-index:2;">
-                            <p style="color:var(--primary); font-family:monospace; font-size:0.6rem; margin:0; letter-spacing:1px;">[ SYSTEM_DIAGNOSTIC_INITIATED ]</p>
-                            <p style="color:var(--primary); font-family:monospace; font-size:0.6rem; margin:0; letter-spacing:1px; margin-bottom:20px;">[ ARCHITECT_ID ]: J.TAYLOR_042</p>
                             <div id="audit-chat-window"></div>
                             <div id="audit-input-area" style="border-top:1px solid rgba(0,204,163,0.1); padding-top:15px;">
                                 <div style="display:flex; gap:10px;">
-                                    <input type="text" id="client-input" placeholder="Analyze specific friction point..." onkeypress="if(event.key==='Enter') ui.sendAuditMessage()">
+                                    <input type="text" id="client-input" placeholder="Describe a business friction..." onkeypress="if(event.key==='Enter') ui.sendAuditMessage()">
                                     <button class="node-btn" onclick="ui.sendAuditMessage()">SEND</button>
                                 </div>
                                 <button class="node-btn" onclick="ui.generateFinalAudit()" style="width:100%; margin-top:10px; border-color:var(--snap-pink); color:var(--snap-pink);">[ GENERATE_FULL_AUDIT ]</button>
@@ -110,7 +86,7 @@
                     ui.initMatrix(); 
                     ui.addAuditMsg("bot", "System online. I am your AI Auditor. Please describe the primary operational friction in your current business workflow."); 
                 }, 100);
-            } else { body.innerHTML = `<h2 style="color:var(--primary)">${type} Node</h2><p style="opacity:0.6;">Establishing secure link to architect databases...</p>`; }
+            } else { body.innerHTML = `<h2 style="color:var(--primary)">${type} Node</h2><p style="opacity:0.6;">Establishing secure link...</p>`; }
         },
 
         addAuditMsg: (role, text) => {
@@ -121,6 +97,8 @@
             div.innerText = text;
             win.appendChild(div);
             win.scrollTop = win.scrollHeight;
+            
+            // CRITICAL: Pushes the message to history so the server knows which question is next
             ui.auditHistory.push({ role, text });
         },
 
@@ -128,41 +106,34 @@
             const input = document.getElementById('client-input');
             const val = input.value;
             if(!val) return;
+            
             ui.addAuditMsg("user", val);
             input.value = "";
+
             try {
                 const res = await fetch(`${API_BASE}/api/audit`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ message: val, history: ui.auditHistory })
+                    body: JSON.stringify({ history: ui.auditHistory })
                 });
                 const data = await res.json();
-                ui.addAuditMsg("bot", data.analysis || "Data acknowledged. Scaling diagnostic parameters...");
-            } catch (e) { ui.addAuditMsg("bot", "Uplink unstable. Proceeding with local diagnostic parameters."); }
+                ui.addAuditMsg("bot", data.analysis);
+            } catch (e) { 
+                ui.addAuditMsg("bot", "Uplink unstable. Please ensure the Render engine is fully awake."); 
+            }
         },
 
         generateFinalAudit: () => {
-            const win = document.getElementById('audit-chat-window');
-            // We count bot messages to ensure all 5 discovery questions were asked + initial greeting
-            const botMsgCount = ui.auditHistory.filter(m => m.role === 'bot').length;
-
-            if (botMsgCount < 6) {
-                ui.addAuditMsg("bot", "I'd love to give you a full report, but I need just a few more details first to make sure it's accurate. Let's finish our quick diagnostic!");
+            const botCount = ui.auditHistory.filter(m => m.role === 'bot').length;
+            if (botCount < 6) {
+                ui.addAuditMsg("bot", "Diagnostic incomplete. I require more data points before generating a high-fidelity report.");
                 return;
             }
 
-            win.innerHTML = `
+            document.getElementById('audit-chat-window').innerHTML = `
                 <div style="color:var(--primary); font-family:monospace; background:rgba(0,204,163,0.05); padding:20px; border-radius:12px; border:1px solid var(--primary); animation: fadeIn 0.8s ease;">
-                    <h3 style="margin-top:0; border-bottom:1px solid rgba(0,204,163,0.2); padding-bottom:10px;">📊 PROFESSIONAL AUDIT SUMMARY</h3>
-                    <div style="font-size:0.8rem; line-height:1.6;">
-                        <p><b>Executive Summary:</b> Based on our conversation, your workflow is currently losing significant velocity to manual data fragmentation.</p>
-                        <p><b>Recommended Architecture:</b> I suggest a <b>Hybrid Agentic Layer</b>. By bridging your current tools with a custom automation script, we can reclaim those lost hours and eliminate the 'headache' points you mentioned.</p>
-                        <p><b>Strategic Impact:</b> This move shifts your operation from 'Reactive' to 'Proactive' management.</p>
-                    </div>
-                    <div style="margin-top:20px; padding-top:10px; border-top:1px solid rgba(0,204,163,0.1); font-size:0.6rem; color:#666; display:flex; justify-content:space-between;">
-                        <span>STATUS: VERIFIED_OPTIMAL</span>
-                        <span>REF: ${Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
-                    </div>
+                    <h3 style="margin-top:0; border-bottom:1px solid rgba(0,204,163,0.2); padding-bottom:10px;">📊 ARCHITECTURAL AUDIT REPORT</h3>
+                    <p style="font-size:0.8rem; line-height:1.6;">Based on our discovery, your workflow is losing significant velocity to manual fragmentation. I recommend a <b>Custom Agentic Pipeline</b> to reclaim approximately 15-20 hours per week.</p>
                 </div>`;
             document.getElementById('audit-input-area').style.display = 'none';
         },
@@ -171,15 +142,10 @@
             try {
                 const res = await fetch(`${API_BASE}/`);
                 if (res.ok) {
-                    const dot = document.getElementById('status-dot');
-                    const text = document.getElementById('status-text');
-                    if(dot && text) {
-                        dot.style.background = 'var(--primary)';
-                        dot.style.boxShadow = '0 0 10px var(--primary)';
-                        text.innerText = 'UPLINK_ONLINE';
-                    }
+                    document.getElementById('status-dot').style.background = 'var(--primary)';
+                    document.getElementById('status-text').innerText = 'UPLINK_ONLINE';
                 }
-            } catch (e) { console.log("Engine offline or spinning up..."); }
+            } catch (e) { console.log("Engine offline..."); }
         },
 
         initMatrix: () => {
