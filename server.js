@@ -7,24 +7,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Debug Check: Ensure Key exists on startup
+if (!process.env.GEMINI_API_KEY) {
+    console.error("CRITICAL_ERROR: GEMINI_API_KEY is missing from Environment Variables!");
+}
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "DUMMY_KEY");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 app.post('/api/audit', async (req, res) => {
     const { history } = req.body;
     const userMessages = (history || []).filter(m => m.role === 'user');
     
-    // Dynamic Architect Prompt
     const systemPrompt = `
-        You are Jonathan Taylor's Strategic AI Engine. Conduct a business audit.
-        Goal: Bridge the gap between manual labor and AI automation for small businesses.
-        Pillars: 1. Workflow 2. ROI 3. Tech Stack 4. AI Readiness 5. Risk.
-        
-        CONTEXT: ${userMessages.map(m => m.text).join(" | ")}
-        
-        RULE: If you have enough info (approx 6 interactions), start with "GENERATE_FINAL_REPORT" 
-        and provide a 5-pillar Markdown report. Otherwise, ask ONE targeted follow-up question.
+        Conduct a 5-pillar business audit for a small business.
+        Context: ${userMessages.map(m => m.text).join(" | ")}
+        Rule: If you have ~6 responses, start with "GENERATE_FINAL_REPORT" and provide a Markdown report. 
+        Otherwise, ask one targeted, professional follow-up question.
     `;
 
     try {
@@ -32,15 +31,15 @@ app.post('/api/audit', async (req, res) => {
         const text = result.response.text();
 
         if (text.includes("GENERATE_FINAL_REPORT")) {
-            const cleanReport = text.replace("GENERATE_FINAL_REPORT", "").trim();
-            res.json({ analysis: cleanReport, status: "complete" });
+            res.json({ analysis: text.replace("GENERATE_FINAL_REPORT", "").trim(), status: "complete" });
         } else {
             res.json({ analysis: text, status: "collecting" });
         }
     } catch (error) {
-        console.error("DETAILED_DEBUG_LOG:", error);
+        // This is where we catch the "Uplink Interrupted" cause
+        console.error("DETAILED_DEBUG_LOG:", error.message || error);
         res.status(500).json({ 
-            analysis: "Uplink interrupted. Check Render logs for DETAILED_DEBUG_LOG.", 
+            analysis: "Uplink interrupted. Ensure your GEMINI_API_KEY is valid in Render's Env settings.", 
             status: "error" 
         });
     }
@@ -49,4 +48,4 @@ app.post('/api/audit', async (req, res) => {
 app.get('/', (req, res) => res.send("Strategic Engine: ONLINE"));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`System Live on ${PORT}`));
+app.listen(PORT, () => console.log(`Engine Live on ${PORT}`));
