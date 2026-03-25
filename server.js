@@ -13,79 +13,40 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 app.post('/api/audit', async (req, res) => {
     const { history } = req.body;
-    
-    // Filter history to get context
     const userMessages = (history || []).filter(m => m.role === 'user');
-    const messageCount = userMessages.length;
-
-    // THE ARCHITECT PROMPT - This defines the AI's "Brain"
+    
+    // Dynamic Architect Prompt
     const systemPrompt = `
-        You are Jonathan Taylor's "Strategic Engine," a Senior AI Systems Architect.
-        Your goal is to audit a small business to prepare a 5-Pillar Automation Report.
-
-        THE 5 PILLARS:
-        1. Workflow Inventory: Map their specific process (Lead gen, fulfillment, etc).
-        2. Friction & ROI: Calculate hours lost to manual/repetitive tasks.
-        3. Tech Stack: Identify software "islands" and manual data copy-pasting.
-        4. AI Readiness: Assess if their data is structured and if they have a brand voice.
-        5. Risk & Ethics: Identify where AI might feel "fake" and define human fail-safes.
-
-        CURRENT CONTEXT: ${userMessages.map(m => m.text).join(" | ")}
-
-        INSTRUCTIONS:
-        - If the user has provided fewer than 6 responses, ask ONE intelligent, brief, and technical follow-up question to dig deeper into one of the 5 pillars. 
-        - If the user has provided 6 or more responses AND you have a clear picture, start your response with the keyword "GENERATE_FINAL_REPORT" followed by a comprehensive, professional 5-section audit using Markdown headers (##).
-        - If you need more info to make the report "Rockstar" quality, keep asking questions.
-        - Tone: Professional, authoritative, and high-velocity.
+        You are Jonathan Taylor's Strategic AI Engine. Conduct a business audit.
+        Goal: Bridge the gap between manual labor and AI automation for small businesses.
+        Pillars: 1. Workflow 2. ROI 3. Tech Stack 4. AI Readiness 5. Risk.
+        
+        CONTEXT: ${userMessages.map(m => m.text).join(" | ")}
+        
+        RULE: If you have enough info (approx 6 interactions), start with "GENERATE_FINAL_REPORT" 
+        and provide a 5-pillar Markdown report. Otherwise, ask ONE targeted follow-up question.
     `;
 
     try {
         const result = await model.generateContent(systemPrompt);
-        const response = await result.response;
-        const text = response.text();
+        const text = result.response.text();
 
         if (text.includes("GENERATE_FINAL_REPORT")) {
-            // Send the final professional report
-            const finalReport = text.replace("GENERATE_FINAL_REPORT", "").trim();
-            res.json({ analysis: finalReport, status: "complete" });
+            const cleanReport = text.replace("GENERATE_FINAL_REPORT", "").trim();
+            res.json({ analysis: cleanReport, status: "complete" });
         } else {
-            // Send the next dynamic question
             res.json({ analysis: text, status: "collecting" });
         }
-
     } catch (error) {
-        // Detailed logging for Render console
-        console.error("AI STRATEGY ENGINE ERROR:", error);
-        
+        console.error("DETAILED_DEBUG_LOG:", error);
         res.status(500).json({ 
-            analysis: "Uplink interrupted. This is likely due to an API Key configuration error or a temporary timeout. Check Render logs.", 
+            analysis: "Uplink interrupted. Check Render logs for DETAILED_DEBUG_LOG.", 
             status: "error" 
         });
     }
 });
 
-// VAULT ENDPOINT - For your Visual Vault functionality
-app.post('/api/analyze', async (req, res) => {
-    try {
-        res.json({
-            name: "ARCHITECTURAL_NODE_ACTIVE",
-            lore: "Neural mapping confirms high-efficiency potential. Legacy silos detected in the operational layer."
-        });
-    } catch (error) {
-        res.status(500).json({ error: "Vault analysis failed." });
-    }
-});
-
-// ROOT HEALTH CHECK
-app.get('/', (req, res) => {
-    res.send("Taylor Strategic Engine: ONLINE | Version 1.25");
-});
+app.get('/', (req, res) => res.send("Strategic Engine: ONLINE"));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`
-    =========================================
-    STRATEGIC ENGINE LIVE ON PORT ${PORT}
-    =========================================
-    `);
-});
+app.listen(PORT, () => console.log(`System Live on ${PORT}`));
