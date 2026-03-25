@@ -183,7 +183,7 @@
                     <p style="font-size:0.7rem; opacity:0.8;">[ ARCHITECT_STAMP ]: VERIFIED_OPTIMAL</p>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
                         <button class="node-btn" onclick="ui.downloadPDF()" style="border-color:#aaa; color:#aaa;">[ DOWNLOAD_PDF ]</button>
-                        <a href="https://zoom.us/j/YOUR_MEETING_ID" target="_blank" style="text-decoration:none;">
+                        <a href="https://zoom.us/j/j53D5r" target="_blank" style="text-decoration:none;">
                             <button class="node-btn" style="width:100%; border-color:#2D8CFF; background:rgba(45,140,255,0.1); color:#fff;">[ ZOOM_STRATEGY ]</button>
                         </a>
                     </div>
@@ -194,7 +194,7 @@
         downloadPDF: () => {
             const content = document.getElementById('audit-report-content').innerText;
             const printWindow = window.open('', '_blank');
-            printWindow.document.write(`<html><head><title>AI Audit Report</title></head><body style="font-family:monospace; padding:50px; line-height:1.6;"><h1 style="color:#00cca3;">AI ARCHITECTURAL AUDIT</h1><p><b>Prepared by:</b> Jonathan Taylor | AI Systems Architect</p><hr><pre style="white-space: pre-wrap;">${content}</pre><hr><p style="font-size:0.8rem;">Session link: https://zoom.us/j/YOUR_MEETING_ID</p></body></html>`);
+            printWindow.document.write(`<html><head><title>AI Audit Report</title></head><body style="font-family:monospace; padding:50px; line-height:1.6;"><h1 style="color:#00cca3;">AI ARCHITECTURAL AUDIT</h1><p><b>Prepared by:</b> Jonathan Taylor | AI Systems Architect</p><hr><pre style="white-space: pre-wrap;">${content}</pre><hr><p style="font-size:0.8rem;">Session link: https://zoom.us/j/j53D5r</p></body></html>`);
             printWindow.document.close();
             printWindow.print();
         },
