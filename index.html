@@ -6,49 +6,25 @@
     <title>Jonathan D. Taylor | AI Architect</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <style>
-        :root { 
-            --primary: #00cca3; 
-            --snap-pink: #bc005e; 
-            --card-bg: rgba(7, 10, 10, 0.92); 
-        }
-        
-        body, html { 
-            margin: 0; padding: 0; min-height: 100vh; width: 100vw; 
-            background: #000 url('assets/city.png') no-repeat center center fixed; 
-            background-size: cover; color: #d1d1d1; font-family: 'Segoe UI', sans-serif; 
-            overflow-x: hidden; 
-        }
-        
+        :root { --primary: #00cca3; --snap-pink: #bc005e; --card-bg: rgba(7, 10, 10, 0.92); }
+        body, html { margin: 0; padding: 0; min-height: 100vh; width: 100vw; background: #000 url('assets/city.png') no-repeat center center fixed; background-size: cover; color: #d1d1d1; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .overlay { position: relative; min-height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.85) 100%); z-index: 10; }
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 90%; max-width: 1100px; z-index: 20; }
-        
-        .card { 
-            background: var(--card-bg); backdrop-filter: blur(25px); 
-            border: 1px solid rgba(0, 204, 163, 0.1); border-radius: 22px; 
-            padding: 30px; transform-style: preserve-3d; cursor: pointer; 
-            position: relative; overflow: hidden; transition: all 0.4s ease; 
-        }
-        
+        .card { background: var(--card-bg); backdrop-filter: blur(25px); border: 1px solid rgba(0, 204, 163, 0.1); border-radius: 22px; padding: 30px; transform-style: preserve-3d; cursor: pointer; position: relative; overflow: hidden; transition: all 0.4s ease; }
         .card:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(0, 204, 163, 0.15); }
         .hero { grid-column: span 3; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
         .hero h1 { font-size: 3.2rem; margin: 0; color: var(--primary); text-shadow: 0 0 15px rgba(0,204,163,0.3); }
         .tag { font-family: monospace; color: var(--primary); font-size: 0.65rem; letter-spacing: 3px; opacity: 0.8; }
-
         #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); display: none; z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: #050808; border: 1px solid rgba(0,204,163,0.2); padding: 35px; border-radius: 28px; width: 95%; max-width: 600px; position: relative; }
-        
         .node-btn { padding: 10px 20px; background: transparent; border: 1px solid var(--primary); color: var(--primary); font-family: monospace; font-size: 0.6rem; cursor: pointer; border-radius: 4px; transition: 0.3s; }
         .node-btn:hover { background: rgba(0,204,163,0.1); }
-        
         input[type="text"] { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid #222; color: #fff; border-radius: 8px; font-family: monospace; font-size: 0.8rem; outline: none; box-sizing: border-box; }
-
         #audit-chat-window { height: 250px; overflow-y: auto; margin-bottom: 20px; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
         .msg { margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; opacity: 0; animation: fadeIn 0.5s forwards; }
         .msg.bot { color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; }
         .msg.user { color: #fff; text-align: right; opacity: 0.7; font-family: monospace; }
-        
         @keyframes fadeIn { to { opacity: 1; } }
-
         @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } .hero { grid-column: span 1; } }
     </style>
 </head>
@@ -102,7 +78,7 @@
                                     <input type="text" id="client-input" placeholder="Describe a business friction..." onkeypress="if(event.key==='Enter') ui.sendAuditMessage()">
                                     <button class="node-btn" onclick="ui.sendAuditMessage()">SEND</button>
                                 </div>
-                                <button class="node-btn" onclick="ui.generateFinalAudit()" style="width:100%; margin-top:10px; border-color:var(--snap-pink); color:var(--snap-pink);">[ GENERATE_FULL_AUDIT ]</button>
+                                <button id="gen-report-btn" class="node-btn" onclick="ui.generateFinalAudit()" style="width:100%; margin-top:10px; border-color:var(--snap-pink); color:var(--snap-pink); display:none;">[ GENERATE_FULL_AUDIT ]</button>
                             </div>
                         </div>
                     </div>`;
@@ -115,10 +91,6 @@
                 body.innerHTML = `
                     <div style="text-align:center; padding:20px;">
                         <h2 style="color:var(--primary); margin-bottom:10px;">[ VISUAL_VAULT_NODE ]</h2>
-                        <p style="font-size:0.7rem; opacity:0.6; margin-bottom:20px;">MULTIMODAL INFRASTRUCTURE ANALYSIS</p>
-                        <div style="border:2px dashed rgba(0,204,163,0.3); padding:40px; border-radius:15px; margin-bottom:20px; background:rgba(0,204,163,0.02);">
-                            <p style="font-size:0.8rem;">Drop architectural schemas or UI wireframes here for agentic review.</p>
-                        </div>
                         <button class="node-btn" onclick="ui.simulateVaultScan()">[ INITIATE_SCAN ]</button>
                         <div id="vault-results" style="margin-top:20px; font-family:monospace; font-size:0.7rem; text-align:left;"></div>
                     </div>`;
@@ -135,6 +107,12 @@
             win.appendChild(div);
             win.scrollTop = win.scrollHeight;
             ui.auditHistory.push({ role, text });
+
+            // Show "Generate Audit" button once the bot has asked all questions
+            if (ui.auditHistory.filter(m => m.role === 'bot').length >= 7) {
+                const btn = document.getElementById('gen-report-btn');
+                if(btn) btn.style.display = 'block';
+            }
         },
 
         sendAuditMessage: async () => {
@@ -151,39 +129,29 @@
                 });
                 const data = await res.json();
                 ui.addAuditMsg("bot", data.analysis);
-            } catch (e) { ui.addAuditMsg("bot", "Uplink unstable. Reconnecting to local diagnostic parameters."); }
+            } catch (e) { ui.addAuditMsg("bot", "Uplink unstable. Please ensure backend is awake."); }
         },
 
         simulateVaultScan: async () => {
             const resDiv = document.getElementById('vault-results');
-            resDiv.innerHTML = "<span style='color:var(--primary)'>CONNECTING_TO_BACKEND...</span>";
+            resDiv.innerHTML = "CONNECTING...";
             try {
                 const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST' });
                 const data = await res.json();
-                resDiv.innerHTML = `
-                    <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid rgba(0,204,163,0.2);">
-                        <p style="margin:5px 0;">STATUS: <span style="color:var(--primary)">${data.name}</span></p>
-                        <p style="margin:5px 0;">GRADE: ${data.grade}</p>
-                        <p style="margin:5px 0; line-height:1.4; color:#aaa;">LORE: ${data.lore}</p>
-                    </div>`;
-            } catch (e) { resDiv.innerHTML = "<span style='color:var(--snap-pink)'>SCAN_FAILED: UPLINK_TIMEOUT</span>"; }
+                resDiv.innerHTML = `<p>STATUS: ${data.name}</p><p>LORE: ${data.lore}</p>`;
+            } catch (e) { resDiv.innerHTML = "SCAN_FAILED"; }
         },
 
         generateFinalAudit: () => {
             const win = document.getElementById('audit-chat-window');
-            const botCount = ui.auditHistory.filter(m => m.role === 'bot').length;
-            if (botCount < 6) {
-                ui.addAuditMsg("bot", "Diagnostic incomplete. I require more data points before generating a high-fidelity report.");
-                return;
-            }
+            const botHistory = ui.auditHistory.filter(m => m.role === 'bot');
+            const finalAnalysis = botHistory[botHistory.length - 1].text;
+
             win.innerHTML = `
-                <div id="audit-report-content" style="color:var(--primary); font-family:monospace; background:rgba(0,204,163,0.05); padding:20px; border-radius:12px; border:1px solid var(--primary); animation: fadeIn 0.8s ease;">
-                    <h3 style="margin-top:0; border-bottom:1px solid rgba(0,204,163,0.2); padding-bottom:10px;">📊 ARCHITECTURAL AUDIT REPORT</h3>
-                    <p style="font-size:0.8rem; line-height:1.6;">Based on our discovery, your workflow is losing significant velocity to manual fragmentation. I recommend a <b>Custom Agentic Pipeline</b> to reclaim approximately 15-20 hours per week.</p>
-                    <p style="font-size:0.7rem; opacity:0.8;">[ ARCHITECT_STAMP ]: VERIFIED_OPTIMAL</p>
-                    <div style="margin-top:20px;">
-                        <button class="node-btn" onclick="ui.downloadPDF()" style="width:100%; border-color:var(--primary); color:var(--primary);">[ DOWNLOAD_FULL_PDF_REPORT ]</button>
-                    </div>
+                <div id="audit-report-content" style="color:var(--primary); font-family:monospace; background:rgba(0,204,163,0.05); padding:20px; border-radius:12px; border:1px solid var(--primary);">
+                    <h3 style="margin-top:0;">📊 ARCHITECTURAL AUDIT REPORT</h3>
+                    <p style="font-size:0.8rem; line-height:1.6;">${finalAnalysis}</p>
+                    <button class="node-btn" onclick="ui.downloadPDF()" style="width:100%; border-color:#aaa; color:#aaa; margin-top:15px;">[ DOWNLOAD_PDF ]</button>
                 </div>`;
             document.getElementById('audit-input-area').style.display = 'none';
         },
@@ -191,7 +159,7 @@
         downloadPDF: () => {
             const content = document.getElementById('audit-report-content').innerText;
             const printWindow = window.open('', '_blank');
-            printWindow.document.write(`<html><head><title>AI Audit Report</title></head><body style="font-family:monospace; padding:50px; line-height:1.6;"><h1 style="color:#00cca3;">AI ARCHITECTURAL AUDIT</h1><p><b>Prepared by:</b> Jonathan Taylor | AI Systems Architect</p><hr><pre style="white-space: pre-wrap;">${content}</pre><hr><p style="font-size:0.8rem;">Analysis generated via the Taylor Strategic Engine [v1.0]</p></body></html>`);
+            printWindow.document.write(`<html><body style="font-family:monospace; padding:50px;"><h1>AI AUDIT</h1><hr><pre style="white-space: pre-wrap;">${content}</pre></body></html>`);
             printWindow.document.close();
             printWindow.print();
         },
@@ -201,10 +169,9 @@
                 const res = await fetch(`${API_BASE}/`);
                 if (res.ok) {
                     document.getElementById('status-dot').style.background = 'var(--primary)';
-                    document.getElementById('status-dot').style.boxShadow = '0 0 10px var(--primary)';
                     document.getElementById('status-text').innerText = 'UPLINK_ONLINE';
                 }
-            } catch (e) { console.log("Engine offline..."); }
+            } catch (e) { console.log("Offline"); }
         },
 
         initMatrix: () => {
@@ -212,7 +179,7 @@
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const letters = "01";
             const fontSize = 11;
             const columns = canvas.width / fontSize;
             const drops = Array(Math.floor(columns)).fill(1);
