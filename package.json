@@ -1,6 +1,6 @@
 {
   "name": "ai-strategy-engine",
-  "version": "1.2.5",
+  "version": "1.2.7",
   "description": "Dynamic AI Systems Architect Audit Backend",
   "main": "server.js",
   "scripts": {
