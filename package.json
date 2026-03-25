@@ -1,20 +1,11 @@
 {
   "name": "ai-strategy-engine",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "AI Systems Architect Portfolio Backend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [
-    "ai",
-    "architect",
-    "portfolio",
-    "gemini"
-  ],
-  "author": "Jonathan Taylor",
-  "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "cors": "^2.8.5",
