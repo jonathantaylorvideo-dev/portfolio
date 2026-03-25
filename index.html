@@ -54,7 +54,6 @@
             padding: 40px; border-radius: 30px; width: 95%; max-width: 750px; 
         }
 
-        /* Audit Chat Interface */
         #audit-chat-window { 
             height: 380px; overflow-y: auto; margin-bottom: 25px; 
             padding-right: 15px; scrollbar-width: thin; scrollbar-color: var(--primary) transparent;
@@ -88,7 +87,7 @@
     <div class="overlay">
         <div class="bento-grid">
             <div class="card hero" onclick="ui.open('About')">
-                <div id="status-text">UPLINK_OFFLINE</div>
+                <div id="status-text">UPLINK_CHECKING...</div>
                 <h1>Jonathan D. Taylor</h1>
                 <p>AI Systems Architect & Agentic Workflow Designer</p>
             </div>
@@ -187,24 +186,25 @@
                 const data = await res.json();
                 if(document.getElementById('ai-loading')) document.getElementById('ai-loading').remove();
                 
-                ui.addAuditMsg("bot", data.analysis);
-
-                if (data.status === "complete") {
-                    document.getElementById('audit-input-area').innerHTML = `
-                        <button class="node-btn" onclick="ui.downloadPDF()" style="width:100%; border-color:var(--snap-pink); color:var(--snap-pink); font-size:0.9rem;">
-                            [ DOWNLOAD_EXECUTIVE_AUDIT_VERDICT ]
-                        </button>`;
+                if (res.status === 500) {
+                    ui.addAuditMsg("bot", `Uplink Error: ${data.analysis || "Server processing failed."}`);
+                } else {
+                    ui.addAuditMsg("bot", data.analysis);
+                    if (data.status === "complete") {
+                        document.getElementById('audit-input-area').innerHTML = `
+                            <button class="node-btn" onclick="ui.downloadPDF()" style="width:100%; border-color:var(--snap-pink); color:var(--snap-pink); font-size:0.9rem;">
+                                [ DOWNLOAD_EXECUTIVE_AUDIT_VERDICT ]
+                            </button>`;
+                    }
                 }
             } catch (e) {
                 if(document.getElementById('ai-loading')) document.getElementById('ai-loading').remove();
-                ui.addAuditMsg("bot", "Uplink interrupted. Please check backend logs.");
+                ui.addAuditMsg("bot", "Uplink interrupted. Ensure the backend is active.");
             }
         },
 
         downloadPDF: () => {
             const reportRaw = ui.auditHistory[ui.auditHistory.length - 1].text;
-            
-            // Advanced Markdown Formatter for PDF
             const reportHTML = reportRaw
                 .replace(/## (.*)/g, '<h2 style="color:#00cca3; border-bottom:1px solid #ddd; padding-bottom:10px; margin-top:35px; text-transform:uppercase; font-size:1.4rem;">$1</h2>')
                 .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
@@ -232,13 +232,11 @@
                         <div class="meta">
                             <b>LEAD ARCHITECT:</b> JONATHAN TAYLOR<br>
                             <b>DATE:</b> ${new Date().toLocaleDateString()}<br>
-                            <b>SYSTEM_ID:</b> STRATEGIC_ENGINE_V1.25
+                            <b>SYSTEM_ID:</b> STRATEGIC_ENGINE_V1.27
                         </div>
                     </div>
                     <div class="content">${reportHTML}</div>
-                    <div class="footer">
-                        Proprietary technical analysis for small business optimization. Built for high-velocity agentic orchestration.
-                    </div>
+                    <div class="footer">Proprietary technical analysis for small business optimization. Built for high-velocity agentic orchestration.</div>
                 </body>
                 </html>
             `);
@@ -256,7 +254,9 @@
                     status.innerText = 'UPLINK_ONLINE';
                     status.style.color = '#00cca3';
                 }
-            } catch (e) {}
+            } catch (e) {
+                document.getElementById('status-text').innerText = 'UPLINK_OFFLINE';
+            }
         }
     };
 
@@ -264,4 +264,4 @@
     VanillaTilt.init(document.querySelectorAll(".card"), { max: 5, speed: 400, glare: true, "max-glare": 0.15 });
 </script>
 </body>
-</html>  
+</html>
