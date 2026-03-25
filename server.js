@@ -1,78 +1,72 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const axios = require('axios');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require('dotenv').config();
 
-dotenv.config();
 const app = express();
-
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json());
 
-/**
- * 1. HEALTH CHECK & UPLINK VERIFICATION
- */
-app.get('/', (req, res) => {
-    res.status(200).send('AI_STRATEGY_ENGINE: ONLINE [STATUS_CODE: 200]');
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-/**
- * 2. PROFESSIONAL DISCOVERY AUDITOR
- * Cycles through 5 stages of business inquiry.
- */
+const questions = [
+    "System online. I am your AI Auditor. Please describe the primary operational friction in your current business workflow.",
+    "Roughly how many hours a week is your team currently spending on these manual tasks?",
+    "Are you currently using any specific software or APIs for these areas, or is most of this handled via spreadsheets?",
+    "Would you prioritize real-time data accuracy across all platforms, or simply reducing the time spent on repetitive entry?",
+    "What is the biggest 'headache' or fail-point that currently causes the most friction?",
+    "What does a 'perfect' workday look like for you once these bottlenecks are automated?"
+];
+
+// --- AI AUDIT ENDPOINT ---
 app.post('/api/audit', async (req, res) => {
     const { history } = req.body;
     
-    // Count how many times the BOT has spoken to determine the next question
+    // Filter history to count how many times the BOT has spoken
     const botMessages = (history || []).filter(m => m.role === 'bot');
+    const userMessages = (history || []).filter(m => m.role === 'user');
     const index = botMessages.length;
 
-    const questions = [
-        "That's a solid starting point. To help me understand the impact, roughly how many hours a week is your team currently spending on these manual tasks?",
-        "Got it. Regarding your tech stack—are you currently using any specific software or APIs for these areas, or is most of this handled via spreadsheets?",
-        "That makes sense. If we were to design a custom solution, would you prioritize real-time data accuracy or simply reducing manual entry time?",
-        "Almost there! In your current workflow, what is the single biggest 'headache' or fail-point that causes the most friction?",
-        "Final question: What does a 'perfect' workday look like for you once these bottlenecks are automated?",
-        "Thank you for those insights. I've finished mapping your business architecture. You can now click [ GENERATE_FULL_AUDIT ] for your report."
-    ];
+    // Phase 1: The Discovery Questions (1-6)
+    if (index < questions.length) {
+        return res.json({ analysis: questions[index] });
+    }
 
-    // Select the question based on conversation progress
-    const responseText = questions[index] || questions[questions.length - 1];
+    // Phase 2: Personalization (The Final Report)
+    try {
+        const clientContext = userMessages.map(m => m.text).join(" | ");
+        
+        const prompt = `
+            You are a Senior AI Systems Architect. 
+            Analyze this business friction data provided by a potential client: "${clientContext}".
+            
+            Provide a high-fidelity architectural verdict in exactly 3-4 sentences. 
+            Mention their specific software or pain points if provided. 
+            Focus on how an 'Agentic Workflow' can solve their 'perfect workday' vision.
+            Keep the tone professional, technical, and high-velocity.
+        `;
 
-    res.json({ status: "SUCCESS", analysis: responseText });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        res.json({ analysis: response.text() });
+
+    } catch (error) {
+        console.error("AI Error:", error);
+        res.json({ analysis: "Analysis complete. A custom agentic pipeline is recommended to bridge your current manual gaps and reclaim high-value hours." });
+    }
 });
 
-/**
- * 3. VISUAL VAULT ENDPOINT (NON-DESTRUCTIVE)
- */
+// --- VISUAL VAULT ENDPOINT ---
 app.post('/api/analyze', async (req, res) => {
     res.json({
-        name: "SCAN_VERIFIED",
-        grade: "A [ARCHITECT_STAMP]",
-        value: "OPTIMAL_FLOW",
-        lore: "Infrastructure alignment confirmed."
+        name: "ARCHITECTURAL_NODE_ACTIVE",
+        grade: "A+",
+        lore: "Multimodal analysis confirms high optimization potential. Recommend transitioning legacy spreadsheets to an autonomous agentic layer."
     });
 });
 
-/**
- * 4. RENDER BINDING
- */
+app.get('/', (req, res) => res.send("Architectural Engine: ONLINE"));
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`AI_STRATEGY_ENGINE: UPLINK ESTABLISHED ON PORT ${PORT}`);
-});
-
-/**
- * 5. STAY_AWAKE PROTOCOL
- */
-const PING_INTERVAL = 14 * 60 * 1000; 
-const SELF_URL = 'https://ai-strategy-engine.onrender.com';
-
-setInterval(async () => {
-    try {
-        await axios.get(SELF_URL);
-        console.log(`[SYSTEM_MAINTENANCE]: Self-ping successful.`);
-    } catch (err) {
-        console.error("[SYSTEM_ERROR]: Self-ping failed.");
-    }
-}, PING_INTERVAL);
+app.listen(PORT, () => console.log(`Engine running on port ${PORT}`));
