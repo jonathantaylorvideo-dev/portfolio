@@ -2,83 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Jonathan D. Taylor | AI Architect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jonathan Taylor | AI Systems Architect</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <style>
-        :root { --primary: #00cca3; --card-bg: rgba(7,10,10,0.9); --snap-pink: #bc005e; }
-        body { margin:0; background:#000; color:#e0e0e0; font-family: sans-serif; overflow-x:hidden; }
-        .bento { display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; padding:40px; max-width:1200px; margin:auto; }
-        .card { background:var(--card-bg); border:1px solid rgba(0,204,163,0.2); border-radius:20px; padding:25px; cursor:pointer; transition:0.3s; }
-        .card:hover { border-color:var(--primary); box-shadow: 0 0 30px rgba(0,204,163,0.1); }
+        :root { --primary: #00cca3; --bg: #050707; --card: rgba(15,20,20,0.8); --pink: #bc005e; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        .bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px; max-width: 1200px; margin: auto; }
+        .card { background: var(--card); border: 1px solid rgba(0,255,163,0.1); border-radius: 24px; padding: 30px; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden; }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,255,163,0.1); }
         .hero { grid-column: span 3; }
-        #status-text { font-family:monospace; font-size:0.7rem; color:var(--snap-pink); }
+        #status { font-family: monospace; font-size: 0.7rem; color: var(--pink); margin-bottom: 10px; }
         
-        /* Modal & Vault Styling */
-        #modal { position:fixed; inset:0; background:rgba(0,0,0,0.95); display:none; z-index:999; justify-content:center; align-items:center; }
-        .modal-inner { width:90%; max-width:800px; background:#080c0c; border:1px solid var(--primary); padding:40px; border-radius:25px; }
-        .vault-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:15px; margin-top:20px; }
-        .vault-item { aspect-ratio:1; background:#111; border-radius:10px; overflow:hidden; border:1px solid #222; }
-        .vault-item img { width:100%; height:100%; object-fit:cover; opacity:0.7; transition:0.3s; }
-        .vault-item:hover img { opacity:1; transform:scale(1.1); }
+        /* Modal & Vault */
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #0a0f0f; border: 1px solid var(--primary); width: 100%; max-width: 800px; border-radius: 30px; padding: 40px; position: relative; max-height: 80vh; overflow-y: auto; }
+        .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .vault-item { aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        .vault-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; filter: grayscale(1); }
+        .vault-item:hover img { filter: grayscale(0); transform: scale(1.05); }
+        
+        #audit-chat { height: 300px; overflow-y: auto; border-bottom: 1px solid #222; margin-bottom: 20px; padding: 10px; }
+        input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 10px; outline: none; }
     </style>
 </head>
 <body>
     <div class="bento">
-        <div class="card hero" onclick="ui.open('About')">
-            <div id="status-text">OFFLINE</div>
-            <h1 style="color:var(--primary); margin:0;">Jonathan D. Taylor</h1>
-            <p>AI Systems Architect</p>
+        <div class="card hero" onclick="ui.open('about')">
+            <div id="status">[ SYSTEM_IDLE ]</div>
+            <h1 style="margin:0; color:var(--primary);">Jonathan Taylor</h1>
+            <p>Multimedia Professional & AI Systems Architect</p>
         </div>
-        <div class="card" onclick="ui.open('Audit')"><h3>AI Auditor</h3><p>Diagnostic Engine</p></div>
-        <div class="card" onclick="ui.open('Vault')"><h3>Visual Vault</h3><p>Neural Assets</p></div>
+        <div class="card" onclick="ui.open('vault')"><h3>Visual Vault</h3><p>Neural Asset Gallery</p></div>
+        <div class="card" onclick="onclick="ui.open('audit')"><h3>AI Auditor</h3><p>Strategy Engine</p></div>
     </div>
 
-    <div id="modal" onclick="ui.close()"><div class="modal-inner" id="modal-content" onclick="event.stopPropagation()"></div></div>
+    <div id="modal" onclick="ui.close()"><div class="modal-content" id="m-body" onclick="event.stopPropagation()"></div></div>
 
 <script>
-    const API_BASE = "https://ai-strategy-engine.onrender.com";
+    const API_BASE = "/api/audit";
+    let history = [];
 
     const ui = {
         open: (type) => {
-            const content = document.getElementById('modal-content');
+            const body = document.getElementById('m-body');
             document.getElementById('modal').style.display = 'flex';
-            
-            if(type === 'Vault') {
-                content.innerHTML = `<h2>Visual Vault</h2><div class="vault-grid">
-                    <div class="vault-item"><img src="assets/project1.jpg" alt="P1"></div>
-                    <div class="vault-item"><img src="assets/project2.jpg" alt="P2"></div>
+            if(type === 'vault') {
+                body.innerHTML = `<h2>Visual Vault</h2><div class="vault-grid">
+                    <div class="vault-item"><img src="assets/project1.jpg"></div>
+                    <div class="vault-item"><img src="assets/project2.jpg"></div>
                 </div>`;
-            } else if(type === 'Audit') {
-                content.innerHTML = `<h2>AI Audit</h2><div id="chat" style="height:300px; overflow-y:auto; margin-bottom:15px;"></div>
-                <input type="text" id="inp" style="width:80%; padding:10px;" placeholder="Describe your business..."><button onclick="ui.send()">SEND</button>`;
-                ui.addMsg("System online. What is your business friction point?");
+            } else if(type === 'audit') {
+                body.innerHTML = `<h2>AI Strategy Audit</h2><div id="audit-chat"></div>
+                <input type="text" id="ai-in" placeholder="Describe your business challenge..." onkeypress="if(event.key==='Enter')ui.send()">`;
+                ui.addMsg("bot", "Strategic Engine online. Describe your current operation or bottleneck.");
             }
         },
-        addMsg: (t) => { document.getElementById('chat').innerHTML += `<p>${t}</p>`; },
-        send: async () => {
-            const val = document.getElementById('inp').value;
-            ui.addMsg("<b>You:</b> " + val);
-            const res = await fetch(`${API_BASE}/api/audit`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ history: [{role:'user', text: val}] })
-            });
-            const data = await res.json();
-            ui.addMsg("<b>AI:</b> " + data.analysis);
+        addMsg: (role, text) => {
+            const chat = document.getElementById('audit-chat');
+            chat.innerHTML += `<p><strong>${role.toUpperCase()}:</strong> ${text}</p>`;
+            chat.scrollTop = chat.scrollHeight;
         },
-        close: () => { document.getElementById('modal').style.display = 'none'; },
-        check: async () => {
+        send: async () => {
+            const el = document.getElementById('ai-in');
+            const val = el.value; if(!val) return;
+            ui.addMsg("user", val);
+            el.value = "";
+            history.push({role: 'user', text: val});
+
             try {
-                const res = await fetch(`${API_BASE}/`);
-                const status = await res.text();
-                const el = document.getElementById('status-text');
-                el.innerText = status === "CONNECTED" ? "UPLINK_LIVE" : "KEY_ERROR";
-                el.style.color = status === "CONNECTED" ? "#00cca3" : "#bc005e";
-            } catch(e) { document.getElementById('status-text').innerText = "DISCONNECTED"; }
-        }
+                const res = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ history })
+                });
+                const data = await res.json();
+                ui.addMsg("bot", data.analysis);
+                if(data.status === 'complete') ui.addMsg("bot", "✅ Audit Complete. Finalizing Report...");
+            } catch(e) { ui.addMsg("bot", "Uplink Error. Check Console."); }
+        },
+        close: () => document.getElementById('modal').style.display = 'none'
     };
-    ui.check();
-    VanillaTilt.init(document.querySelectorAll(".card"), { max: 5 });
+    VanillaTilt.init(document.querySelectorAll(".card"), { max: 5, speed: 400 });
 </script>
 </body>
 </html>
